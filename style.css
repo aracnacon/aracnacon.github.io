@@ -191,6 +191,28 @@ header p {
   transform: translateY(-2px);
 }
 
+/* Story Row */
+.story-row {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.story-row > div {
+  flex: 1;
+}
+
+.story-row img {
+  border-radius: 12px;
+}
+
+.story-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
 /* Page Backgrounds */
 .page-home {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
