@@ -84,7 +84,9 @@
       <!-- Contact Form -->
       <section>
         <h2>Contact Me</h2>
-        <form id="contact-form">
+        <form action="https://formspree.io/f/xqeyklbg" method="POST">
+          <input type="hidden" name="_next" value="https://aracnacon.github.io/" />
+          <input type="hidden" name="_subject" value="New message from your website" />
           <label for="name">Name:</label><br />
           <input type="text" id="name" name="name" placeholder="Your name" required /><br /><br />
 
@@ -96,33 +98,6 @@
 
           <button type="submit">Send</button>
         </form>
-        <p id="form-status"></p>
-
-        <script>
-          document.getElementById("contact-form").addEventListener("submit", function(e) {
-            e.preventDefault();
-            var form = e.target;
-            var status = document.getElementById("form-status");
-
-            fetch("https://formspree.io/f/xqeyklbg", {
-              method: "POST",
-              body: new FormData(form),
-              headers: { "Accept": "application/json" }
-            }).then(function(response) {
-              if (response.ok) {
-                status.textContent = "Message sent! Redirecting to home...";
-                status.style.color = "#4da6ff";
-                form.reset();
-                setTimeout(function() {
-                  window.location.replace("https://aracnacon.github.io/index.html");
-                }, 3000);
-              } else {
-                status.textContent = "Something went wrong. Please try again.";
-                status.style.color = "#ff4d4d";
-              }
-            });
-          });
-        </script>
       </section>
 
     </main>
