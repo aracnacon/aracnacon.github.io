@@ -352,3 +352,53 @@ a.hex {
 .hex-orange .hex-label {
   color: #f39c12;
 }
+
+/* Responsive — Mobile */
+@media (max-width: 600px) {
+  body {
+    padding: 20px 15px;
+  }
+
+  h1 {
+    font-size: 1.8em;
+  }
+
+  h2 {
+    font-size: 1.3em;
+  }
+
+  section {
+    padding: 18px 20px;
+  }
+
+  .story-row {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .story-row img {
+    width: 200px;
+  }
+
+  .social-row {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hex {
+    width: 90px;
+    height: 78px;
+  }
+
+  .hex i {
+    font-size: 1.1em;
+  }
+
+  .hex span {
+    font-size: 0.55em;
+  }
+
+  input, textarea {
+    max-width: 100%;
+  }
+}
