@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brandon's Profile</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  </head>
+  <body>
+
+    <!-- HEADER: Top banner -->
+    <header>
+      <h1>Brandon Hixson</h1>
+      <p>Welcome to my personal profile page!</p>
+    </header>
+
+    <!-- NAV: Navigation links -->
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="faith.html">Faith</a>
+      <a href="marines.html">Marines</a>
+      <a href="experience.html">Experience</a>
+      <a href="https://github.com/aracnacon"><i class="fa-brands fa-github"></i> GitHub</a>
+      <a href="https://linkedin.com/in/brandonhixson"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+    </nav>
+
+    <!-- MAIN: Primary content -->
+    <main>
+
+      <!-- About Me -->
+      <section>
+        <h2>About Me</h2>
+        <p>
+          I'm a developer who loves building things.
+          This is my first HTML page!
+        </p>
+        <img
+          src="MeHead.jpg"
+          alt="Profile photo of Brandon"
+          width="200"
+          height="200"
+        />
+      </section>
+
+      <!-- Skills Word Cloud -->
+      <section>
+        <h2>Skills</h2>
+        <div class="word-cloud">
+          <span class="cloud-xl">Python</span>
+          <span class="cloud-lg">PowerShell</span>
+          <span class="cloud-xl">Azure</span>
+          <span class="cloud-md">Django</span>
+          <span class="cloud-lg">AWS</span>
+          <span class="cloud-sm">HTML</span>
+          <span class="cloud-md">Docker</span>
+          <span class="cloud-xl">Monitoring</span>
+          <span class="cloud-sm">CSS</span>
+          <span class="cloud-lg">SQL</span>
+          <span class="cloud-md">Jira</span>
+          <span class="cloud-sm">Git</span>
+          <span class="cloud-lg">Linux</span>
+          <span class="cloud-md">Windows Server</span>
+          <span class="cloud-sm">Confluence</span>
+          <span class="cloud-md">Agile</span>
+          <span class="cloud-sm">JavaScript</span>
+          <span class="cloud-lg">Automation</span>
+          <span class="cloud-sm">NRQL</span>
+          <span class="cloud-md">SaaS</span>
+        </div>
+      </section>
+
+      <!-- AI Tools -->
+      <section>
+        <h2>AI Tools</h2>
+        <ul>
+          <li>ChatGPT — GPT-4o</li>
+          <li>GitHub Copilot — GPT-4o / Claude 3.5 Sonnet</li>
+          <li>Claude Code — Opus 4.6</li>
+        </ul>
+      </section>
+
+      <!-- Contact Form -->
+      <section>
+        <h2>Contact Me</h2>
+        <form action="https://formspree.io/f/xqeyklbg" method="POST">
+          <label for="name">Name:</label><br />
+          <input type="text" id="name" name="name" placeholder="Your name" required /><br /><br />
+
+          <label for="email">Email:</label><br />
+          <input type="email" id="email" name="email" placeholder="Your email" required /><br /><br />
+
+          <label for="message">Message:</label><br />
+          <textarea id="message" name="message" rows="4" cols="40" placeholder="Say hello!" required></textarea><br /><br />
+
+          <button type="submit">Send</button>
+        </form>
+      </section>
+
+    </main>
+
+    <!-- FOOTER: Bottom of page -->
+    <footer>
+      <p>&copy; 2026 Brandon Hixson. All rights reserved.</p>
+    </footer>
+
+  </body>
+</html>
