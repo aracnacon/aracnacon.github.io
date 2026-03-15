@@ -1,3 +1,51 @@
+/* ===== KEYFRAMES — Entrance Animations ===== */
+
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInGrow {
+  0% { opacity: 0; transform: scale(0.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ===== KEYFRAMES — Glow & Shimmer Effects ===== */
+
+@keyframes pulseGlow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(30, 144, 255, 0.3),
+                 0 0 40px rgba(30, 144, 255, 0.1);
+  }
+  50% {
+    text-shadow: 0 0 25px rgba(30, 144, 255, 0.6),
+                 0 0 50px rgba(30, 144, 255, 0.25),
+                 0 0 80px rgba(30, 144, 255, 0.1);
+  }
+}
+
+@keyframes shimmerSweep {
+  0% { left: -50%; }
+  100% { left: 150%; }
+}
+
+@keyframes hexFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ===== BASE STYLES ===== */
+
 body {
   background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0a1628 100%);
   color: #e0e0e0;
@@ -15,6 +63,8 @@ h1 {
   text-shadow: 0 0 20px rgba(30, 144, 255, 0.3);
   margin-bottom: 5px;
   text-align: center;
+  animation: fadeInScale 0.8s ease-out both,
+             pulseGlow 3s ease-in-out 1s infinite;
 }
 
 h2 {
@@ -47,6 +97,10 @@ img:hover {
   box-shadow: 0 0 25px rgba(30, 144, 255, 0.6);
 }
 
+header img {
+  animation: fadeInGrow 1s ease-out 0.3s both;
+}
+
 nav {
   margin: 25px 0;
   display: flex;
@@ -64,6 +118,35 @@ nav a {
   border: 1px solid #1e90ff;
   border-radius: 25px;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-out both;
+}
+
+nav a:nth-child(1) { animation-delay: 0.1s; }
+nav a:nth-child(2) { animation-delay: 0.2s; }
+nav a:nth-child(3) { animation-delay: 0.3s; }
+nav a:nth-child(4) { animation-delay: 0.4s; }
+nav a:nth-child(5) { animation-delay: 0.5s; }
+nav a:nth-child(6) { animation-delay: 0.6s; }
+nav a:nth-child(7) { animation-delay: 0.7s; }
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 18px;
+  right: 18px;
+  height: 2px;
+  background: #1e90ff;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+nav a:hover::after {
+  transform: scaleX(1);
+  background: #0a1628;
 }
 
 nav a:hover {
@@ -80,12 +163,32 @@ section {
   padding: 25px 30px;
   margin-bottom: 25px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  animation: fadeInUp 0.6s ease-out both;
 }
+
+section:nth-of-type(1)  { animation-delay: 0.1s; }
+section:nth-of-type(2)  { animation-delay: 0.25s; }
+section:nth-of-type(3)  { animation-delay: 0.4s; }
+section:nth-of-type(4)  { animation-delay: 0.55s; }
+section:nth-of-type(5)  { animation-delay: 0.7s; }
+section:nth-of-type(6)  { animation-delay: 0.85s; }
+section:nth-of-type(7)  { animation-delay: 1.0s; }
+section:nth-of-type(8)  { animation-delay: 1.15s; }
+section:nth-of-type(9)  { animation-delay: 1.3s; }
+section:nth-of-type(10) { animation-delay: 1.45s; }
+section:nth-of-type(11) { animation-delay: 1.6s; }
 
 section:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  border-color: rgba(30, 144, 255, 0.5);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4),
+              0 0 20px rgba(30, 144, 255, 0.15),
+              0 0 40px rgba(30, 144, 255, 0.08);
+}
+
+main > h2 {
+  animation: fadeIn 0.5s ease-out 0.3s both;
 }
 
 ul {
@@ -145,12 +248,33 @@ button {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(30, 144, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
 }
 
 button:hover {
   background: linear-gradient(135deg, #4da6ff, #1e90ff);
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(30, 144, 255, 0.5);
+}
+
+button:hover::after {
+  animation: shimmerSweep 0.8s ease-out;
 }
 
 header {
@@ -253,6 +377,7 @@ footer {
   padding-top: 20px;
   text-align: center;
   color: #7a8ba8;
+  animation: fadeIn 0.8s ease-out 1s both;
 }
 
 /* Hexagon Grid */
@@ -293,7 +418,15 @@ footer {
   gap: 4px;
   transition: transform 0.3s ease, filter 0.3s ease;
   cursor: default;
+  animation: hexFloat 3s ease-in-out infinite;
 }
+
+.hex-row .hex:nth-child(1) { animation-delay: 0s; }
+.hex-row .hex:nth-child(2) { animation-delay: 0.4s; }
+.hex-row .hex:nth-child(3) { animation-delay: 0.8s; }
+.hex-row .hex:nth-child(4) { animation-delay: 1.2s; }
+.hex-row .hex:nth-child(5) { animation-delay: 1.6s; }
+.hex-row .hex:nth-child(6) { animation-delay: 2.0s; }
 
 .hex i {
   color: #fff;
@@ -319,8 +452,9 @@ a.hex {
 }
 
 .hex:hover {
-  transform: scale(1.15);
+  transform: scale(1.15) translateY(-4px);
   filter: brightness(1.2);
+  animation-play-state: paused;
 }
 
 /* Category colors */
@@ -413,5 +547,14 @@ a.hex {
 
   input, textarea {
     max-width: 100%;
+  }
+}
+
+/* Accessibility — Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
