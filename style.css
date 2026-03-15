@@ -239,6 +239,11 @@ header p {
     url('images/BareFoot.png') center/cover no-repeat fixed;
 }
 
+.page-aracnatech {
+  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('images/SandBackground.png') center/cover no-repeat fixed;
+}
+
 footer {
   margin-top: 40px;
   border-top: 1px solid rgba(30, 144, 255, 0.3);
