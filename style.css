@@ -519,6 +519,11 @@ a.hex {
   border-radius: 10px;
   position: relative;
   min-width: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.demo-panel:hover {
+  transform: translateY(-3px);
 }
 
 .demo-label {
@@ -542,6 +547,7 @@ a.hex {
   background: rgba(46, 204, 113, 0.2);
   color: #2ecc71;
   border: 1px solid rgba(46, 204, 113, 0.4);
+  animation: fadeIn 0.5s ease-out 0.5s both;
 }
 
 /* Legacy Panel — intentionally dated */
@@ -550,6 +556,10 @@ a.hex {
   border: 2px solid #999;
   color: #333;
   font-family: 'Times New Roman', serif;
+}
+
+.demo-legacy:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .demo-legacy p {
@@ -561,6 +571,13 @@ a.hex {
 .demo-modern {
   background: rgba(26, 42, 74, 0.7);
   border: 1px solid rgba(30, 144, 255, 0.3);
+}
+
+.demo-modern:hover {
+  border-color: rgba(30, 144, 255, 0.6);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4),
+              0 0 20px rgba(30, 144, 255, 0.15),
+              0 0 40px rgba(30, 144, 255, 0.08);
 }
 
 .demo-modern p {
@@ -624,6 +641,13 @@ a.hex {
   border-radius: 12px;
   font-size: 0.85em;
   font-weight: bold;
+  display: inline-block;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.status-active:hover {
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+  transform: scale(1.1);
 }
 
 .status-leave {
@@ -633,6 +657,13 @@ a.hex {
   border-radius: 12px;
   font-size: 0.85em;
   font-weight: bold;
+  display: inline-block;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.status-leave:hover {
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+  transform: scale(1.1);
 }
 
 .status-inactive {
@@ -642,6 +673,13 @@ a.hex {
   border-radius: 12px;
   font-size: 0.85em;
   font-weight: bold;
+  display: inline-block;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.status-inactive:hover {
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+  transform: scale(1.1);
 }
 
 /* Navigation Tabs — Legacy */
@@ -709,6 +747,7 @@ a.hex {
   background: #1e90ff;
   color: #0a1628;
   font-weight: bold;
+  box-shadow: 0 0 12px rgba(30, 144, 255, 0.5);
 }
 
 .modern-tab-content {
@@ -734,6 +773,12 @@ a.hex {
   border-radius: 16px;
   padding: 8px;
   background: #222;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.phone-frame:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
 
 .phone-screen {
@@ -763,9 +808,20 @@ a.hex {
   padding: 8px 10px;
   margin-bottom: 6px;
   font-size: 11px;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.phone-card:hover {
+  border-color: rgba(30, 144, 255, 0.5);
+  background: rgba(30, 144, 255, 0.1);
 }
 
 /* Toast Messages */
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
 .toast-msg {
   display: none;
   margin-top: 12px;
@@ -777,6 +833,7 @@ a.hex {
   font-size: 13px;
   font-weight: bold;
   transition: opacity 0.3s ease;
+  animation: slideInLeft 0.4s ease-out;
 }
 
 /* Validation Icons */
