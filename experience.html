@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <title>IT Experience - Brandon Hixson</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -36,76 +37,12 @@
         </p>
       </section>
 
-      <!-- Skills Hexagon Grid -->
+      <!-- Skills Hexagon Grid (driven by skills.json) -->
       <section>
         <h2>Skills</h2>
-        <div class="hex-grid">
-
-          <div class="hex-group hex-blue">
-            <h3 class="hex-label">Cloud & Infrastructure</h3>
-            <div class="hex-row">
-              <a href="https://azure.microsoft.com" target="_blank" class="hex"><i class="devicon-azure-plain"></i><span>Azure</span></a>
-              <a href="https://aws.amazon.com" target="_blank" class="hex"><i class="devicon-amazonwebservices-plain-wordmark"></i><span>AWS</span></a>
-              <a href="https://www.docker.com" target="_blank" class="hex"><i class="devicon-docker-plain"></i><span>Docker</span></a>
-              <a href="https://www.linux.org" target="_blank" class="hex"><i class="devicon-linux-plain"></i><span>Linux</span></a>
-              <a href="https://www.microsoft.com/en-us/windows-server" target="_blank" class="hex"><i class="devicon-windows11-original"></i><span>Windows Server</span></a>
-            </div>
-          </div>
-
-          <div class="hex-group hex-green">
-            <h3 class="hex-label">Programming</h3>
-            <div class="hex-row">
-              <a href="https://www.python.org" target="_blank" class="hex"><i class="devicon-python-plain"></i><span>Python</span></a>
-              <a href="https://learn.microsoft.com/en-us/powershell/" target="_blank" class="hex"><i class="devicon-powershell-plain"></i><span>PowerShell</span></a>
-              <a href="https://www.microsoft.com/en-us/sql-server" target="_blank" class="hex"><i class="devicon-microsoftsqlserver-plain"></i><span>SQL</span></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" class="hex"><i class="devicon-javascript-plain"></i><span>JavaScript</span></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" class="hex"><i class="devicon-html5-plain"></i><span>HTML</span></a>
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" class="hex"><i class="devicon-css3-plain"></i><span>CSS</span></a>
-            </div>
-          </div>
-
-          <div class="hex-group hex-red">
-            <h3 class="hex-label">Monitoring</h3>
-            <div class="hex-row">
-              <a href="https://newrelic.com" target="_blank" class="hex"><i class="devicon-newrelic-plain"></i><span>New Relic</span></a>
-              <a href="https://docs.newrelic.com/docs/nrql/get-started/introduction-nrql-new-relics-query-language/" target="_blank" class="hex"><i class="fa-solid fa-magnifying-glass-chart"></i><span>NRQL</span></a>
-              <a href="https://www.dynatrace.com" target="_blank" class="hex"><i class="fa-solid fa-wave-square"></i><span>Dynatrace</span></a>
-              <a href="https://www.splunk.com" target="_blank" class="hex"><i class="devicon-splunk-original-wordmark"></i><span>Splunk</span></a>
-              <a href="https://learn.microsoft.com/en-us/system-center/scom/" target="_blank" class="hex"><i class="fa-solid fa-server"></i><span>SCOM</span></a>
-              <a href="https://aws.amazon.com/cloudwatch/" target="_blank" class="hex"><i class="devicon-amazonwebservices-plain-wordmark"></i><span>CloudWatch</span></a>
-            </div>
-          </div>
-
-          <div class="hex-group hex-purple">
-            <h3 class="hex-label">Frameworks</h3>
-            <div class="hex-row">
-              <a href="https://www.djangoproject.com" target="_blank" class="hex"><i class="devicon-django-plain"></i><span>Django</span></a>
-              <a href="https://en.wikipedia.org/wiki/Software_as_a_service" target="_blank" class="hex"><i class="fa-solid fa-cloud"></i><span>SaaS</span></a>
-            </div>
-          </div>
-
-          <div class="hex-group hex-teal">
-            <h3 class="hex-label">AI Tools</h3>
-            <div class="hex-row">
-              <a href="https://claude.ai" target="_blank" class="hex"><i class="fa-solid fa-brain"></i><span>Claude</span></a>
-              <a href="https://github.com/features/copilot" target="_blank" class="hex"><i class="fa-solid fa-code"></i><span>Copilot</span></a>
-              <a href="https://chatgpt.com" target="_blank" class="hex"><i class="fa-solid fa-robot"></i><span>ChatGPT</span></a>
-            </div>
-          </div>
-
-          <div class="hex-group hex-orange">
-            <h3 class="hex-label">Tools & Process</h3>
-            <div class="hex-row">
-              <a href="https://git-scm.com" target="_blank" class="hex"><i class="devicon-git-plain"></i><span>Git</span></a>
-              <a href="https://www.atlassian.com/software/jira" target="_blank" class="hex"><i class="devicon-jira-plain"></i><span>Jira</span></a>
-              <a href="https://www.atlassian.com/software/confluence" target="_blank" class="hex"><i class="devicon-confluence-plain"></i><span>Confluence</span></a>
-              <a href="https://www.atlassian.com/agile" target="_blank" class="hex"><i class="fa-solid fa-arrows-spin"></i><span>Agile</span></a>
-              <a href="https://www.redhat.com/en/topics/automation" target="_blank" class="hex"><i class="fa-solid fa-gears"></i><span>Automation</span></a>
-            </div>
-          </div>
-
-        </div>
+        <div class="hex-grid"></div>
       </section>
+      <script src="skills.js"></script>
 
       <h2>Current Project</h2>
 
