@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Cloud & Infrastructure",
+    "color": "hex-blue",
+    "skills": [
+      { "name": "Azure", "url": "https://azure.microsoft.com", "icon": "devicon-azure-plain" },
+      { "name": "AWS", "url": "https://aws.amazon.com", "icon": "devicon-amazonwebservices-plain-wordmark" },
+      { "name": "Docker", "url": "https://www.docker.com", "icon": "devicon-docker-plain" },
+      { "name": "Linux", "url": "https://www.linux.org", "icon": "devicon-linux-plain" },
+      { "name": "Windows Server", "url": "https://www.microsoft.com/en-us/windows-server", "icon": "devicon-windows11-original" }
+    ]
+  },
+  {
+    "name": "Programming",
+    "color": "hex-green",
+    "skills": [
+      { "name": "Python", "url": "https://www.python.org", "icon": "devicon-python-plain" },
+      { "name": "PowerShell", "url": "https://learn.microsoft.com/en-us/powershell/", "icon": "devicon-powershell-plain" },
+      { "name": "SQL", "url": "https://www.microsoft.com/en-us/sql-server", "icon": "devicon-microsoftsqlserver-plain" },
+      { "name": "JavaScript", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript", "icon": "devicon-javascript-plain" },
+      { "name": "HTML", "url": "https://developer.mozilla.org/en-US/docs/Web/HTML", "icon": "devicon-html5-plain" },
+      { "name": "CSS", "url": "https://developer.mozilla.org/en-US/docs/Web/CSS", "icon": "devicon-css3-plain" }
+    ]
+  },
+  {
+    "name": "Monitoring",
+    "color": "hex-red",
+    "skills": [
+      { "name": "New Relic", "url": "https://newrelic.com", "icon": "devicon-newrelic-plain" },
+      { "name": "NRQL", "url": "https://docs.newrelic.com/docs/nrql/get-started/introduction-nrql-new-relics-query-language/", "icon": "fa-solid fa-magnifying-glass-chart" },
+      { "name": "Dynatrace", "url": "https://www.dynatrace.com", "icon": "fa-solid fa-wave-square" },
+      { "name": "Splunk", "url": "https://www.splunk.com", "icon": "devicon-splunk-original-wordmark" },
+      { "name": "SCOM", "url": "https://learn.microsoft.com/en-us/system-center/scom/", "icon": "fa-solid fa-server" },
+      { "name": "CloudWatch", "url": "https://aws.amazon.com/cloudwatch/", "icon": "devicon-amazonwebservices-plain-wordmark" }
+    ]
+  },
+  {
+    "name": "Frameworks",
+    "color": "hex-purple",
+    "skills": [
+      { "name": "Django", "url": "https://www.djangoproject.com", "icon": "devicon-django-plain" },
+      { "name": "SaaS", "url": "https://en.wikipedia.org/wiki/Software_as_a_service", "icon": "fa-solid fa-cloud" }
+    ]
+  },
+  {
+    "name": "AI Tools",
+    "color": "hex-teal",
+    "skills": [
+      { "name": "Claude", "url": "https://claude.ai", "icon": "fa-solid fa-brain" },
+      { "name": "Copilot", "url": "https://github.com/features/copilot", "icon": "fa-solid fa-code" },
+      { "name": "ChatGPT", "url": "https://chatgpt.com", "icon": "fa-solid fa-robot" }
+    ]
+  },
+  {
+    "name": "Tools & Process",
+    "color": "hex-orange",
+    "skills": [
+      { "name": "Git", "url": "https://git-scm.com", "icon": "devicon-git-plain" },
+      { "name": "Jira", "url": "https://www.atlassian.com/software/jira", "icon": "devicon-jira-plain" },
+      { "name": "Confluence", "url": "https://www.atlassian.com/software/confluence", "icon": "devicon-confluence-plain" },
+      { "name": "Agile", "url": "https://www.atlassian.com/agile", "icon": "fa-solid fa-arrows-spin" },
+      { "name": "Automation", "url": "https://www.redhat.com/en/topics/automation", "icon": "fa-solid fa-gears" }
+    ]
+  }
+]

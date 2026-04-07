@@ -463,32 +463,32 @@ header p {
 /* Page Backgrounds */
 .page-home {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('images/SandBackground.png') center/cover no-repeat fixed;
+    url('../images/backgrounds/SandBackground.png') center/cover no-repeat fixed;
 }
 
 .page-marines {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('images/CombatBootPrint.png') center/cover no-repeat fixed;
+    url('../images/backgrounds/CombatBootPrint.png') center/cover no-repeat fixed;
 }
 
 .page-experience {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('images/DressShoePrint.png') center/cover no-repeat fixed;
+    url('../images/backgrounds/DressShoePrint.png') center/cover no-repeat fixed;
 }
 
 .page-projects {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('images/DressShoePrint.png') center/cover no-repeat fixed;
+    url('../images/backgrounds/DressShoePrint.png') center/cover no-repeat fixed;
 }
 
 .page-faith {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('images/BareFoot.png') center/cover no-repeat fixed;
+    url('../images/backgrounds/BareFoot.png') center/cover no-repeat fixed;
 }
 
 .page-aracnatech {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('images/SandBackground.png') center/cover no-repeat fixed;
+    url('../images/backgrounds/SandBackground.png') center/cover no-repeat fixed;
 }
 
 footer {
@@ -623,7 +623,7 @@ a.hex {
 /* Compare Page Background */
 .page-compare {
   background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('images/SandBackground.png') center/cover no-repeat fixed;
+    url('../images/backgrounds/SandBackground.png') center/cover no-repeat fixed;
 }
 
 /* Demo Layout */
