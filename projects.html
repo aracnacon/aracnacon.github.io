@@ -40,6 +40,11 @@
           <li>Planning Center API integration for member data sync</li>
         </ul>
         <p><strong>Tech:</strong> Node.js, Vanilla JavaScript, HTML5, CSS3, YouTube Data API, Planning Center API, SMTP, PBKDF2</p>
+        <div class="screenshot-gallery" data-project="church-manager">
+          <img src="images/screenshots/church-manager-1.png" alt="Church Manager — Home page" class="screenshot-thumb" data-full="images/screenshots/church-manager-1.png" data-index="0" onclick="openLightbox(this)" />
+          <img src="images/screenshots/church-manager-2.png" alt="Church Manager — Admin panel" class="screenshot-thumb" data-full="images/screenshots/church-manager-2.png" data-index="1" onclick="openLightbox(this)" />
+          <img src="images/screenshots/church-manager-3.png" alt="Church Manager — Connect portal" class="screenshot-thumb" data-full="images/screenshots/church-manager-3.png" data-index="2" onclick="openLightbox(this)" />
+        </div>
       </section>
 
       <section>
@@ -54,6 +59,11 @@
           <li>7-stage sales pipeline: Uninitiated → Contacted → Responded → Lead → Proposal → Won/Lost</li>
         </ul>
         <p><strong>Tech:</strong> Django, Next.js, React, Tailwind CSS, TypeScript, SQLite, BeautifulSoup, ReportLab</p>
+        <div class="screenshot-gallery" data-project="proshunter">
+          <img src="images/screenshots/proshunter-1.png" alt="ProsHunter — Pipeline dashboard" class="screenshot-thumb" data-full="images/screenshots/proshunter-1.png" data-index="0" onclick="openLightbox(this)" />
+          <img src="images/screenshots/proshunter-2.png" alt="ProsHunter — Prospect scanner" class="screenshot-thumb" data-full="images/screenshots/proshunter-2.png" data-index="1" onclick="openLightbox(this)" />
+          <img src="images/screenshots/proshunter-3.png" alt="ProsHunter — Email outreach" class="screenshot-thumb" data-full="images/screenshots/proshunter-3.png" data-index="2" onclick="openLightbox(this)" />
+        </div>
       </section>
 
       <section>
@@ -68,6 +78,11 @@
           <li>Delivering frontend demos with interactive dashboards, signature workflows, and timesheet management</li>
         </ul>
         <p><strong>Tech:</strong> Next.js, React, TypeScript, Tailwind CSS, Radix UI, Recharts, FullCalendar, Django, Django REST Framework, PostgreSQL, JWT, SAML, Microsoft Graph API, AWS S3, WeasyPrint</p>
+        <div class="screenshot-gallery" data-project="timekeeping">
+          <img src="images/screenshots/timekeeping-1.png" alt="Timekeeping Tool — Timesheet grid" class="screenshot-thumb" data-full="images/screenshots/timekeeping-1.png" data-index="0" onclick="openLightbox(this)" />
+          <img src="images/screenshots/timekeeping-2.png" alt="Timekeeping Tool — Dashboard" class="screenshot-thumb" data-full="images/screenshots/timekeeping-2.png" data-index="1" onclick="openLightbox(this)" />
+          <img src="images/screenshots/timekeeping-3.png" alt="Timekeeping Tool — Signature workflow" class="screenshot-thumb" data-full="images/screenshots/timekeeping-3.png" data-index="2" onclick="openLightbox(this)" />
+        </div>
       </section>
 
       <section>
@@ -81,6 +96,11 @@
           <li>Cross-platform builds via PyInstaller with GitHub Actions CI/CD</li>
         </ul>
         <p><strong>Tech:</strong> Python, CustomTkinter, psutil, pystray, YARA, VirusTotal API, Pillow, PyInstaller, GitHub Actions</p>
+        <div class="screenshot-gallery" data-project="perfplater">
+          <img src="images/screenshots/perfplater-1.png" alt="PerfPlater — Performance dashboard" class="screenshot-thumb" data-full="images/screenshots/perfplater-1.png" data-index="0" onclick="openLightbox(this)" />
+          <img src="images/screenshots/perfplater-2.png" alt="PerfPlater — CPU detail view" class="screenshot-thumb" data-full="images/screenshots/perfplater-2.png" data-index="1" onclick="openLightbox(this)" />
+          <img src="images/screenshots/perfplater-3.png" alt="PerfPlater — Security scanner" class="screenshot-thumb" data-full="images/screenshots/perfplater-3.png" data-index="2" onclick="openLightbox(this)" />
+        </div>
       </section>
 
       <h2>Employment Projects</h2>
@@ -184,6 +204,66 @@
     <footer>
       <p>&copy; 2026 Brandon Hixson. All rights reserved.</p>
     </footer>
+
+    <!-- Screenshot Lightbox -->
+    <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox(event)">
+      <button class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close lightbox">&times;</button>
+      <button class="lightbox-prev" onclick="navigateLightbox(-1, event)" aria-label="Previous image">&#10094;</button>
+      <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+      <button class="lightbox-next" onclick="navigateLightbox(1, event)" aria-label="Next image">&#10095;</button>
+    </div>
+
+    <script>
+      var lightboxState = { gallery: null, index: 0, images: [] };
+
+      function openLightbox(thumb) {
+        var gallery = thumb.closest('.screenshot-gallery');
+        var images = gallery.querySelectorAll('.screenshot-thumb');
+        lightboxState.gallery = gallery;
+        lightboxState.images = Array.from(images);
+        lightboxState.index = parseInt(thumb.getAttribute('data-index'), 10);
+
+        var overlay = document.getElementById('lightbox');
+        var img = document.getElementById('lightbox-img');
+        img.src = thumb.getAttribute('data-full');
+        img.alt = thumb.alt;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox(event) {
+        if (event && event.target !== event.currentTarget) return;
+        var overlay = document.getElementById('lightbox');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      function navigateLightbox(direction, event) {
+        if (event) event.stopPropagation();
+        var images = lightboxState.images;
+        var newIndex = lightboxState.index + direction;
+        if (newIndex < 0) newIndex = images.length - 1;
+        if (newIndex >= images.length) newIndex = 0;
+        lightboxState.index = newIndex;
+        var thumb = images[newIndex];
+        var img = document.getElementById('lightbox-img');
+        img.src = thumb.getAttribute('data-full');
+        img.alt = thumb.alt;
+      }
+
+      document.addEventListener('keydown', function(e) {
+        var overlay = document.getElementById('lightbox');
+        if (!overlay.classList.contains('active')) return;
+        if (e.key === 'Escape') {
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        } else if (e.key === 'ArrowLeft') {
+          navigateLightbox(-1, null);
+        } else if (e.key === 'ArrowRight') {
+          navigateLightbox(1, null);
+        }
+      });
+    </script>
 
   </body>
 </html>
