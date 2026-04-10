@@ -7,11 +7,11 @@
   'use strict';
 
   var themes = [
-    { className: '',              label: 'Midnight Blue' },
-    { className: 'theme-ember',   label: 'Ember'         },
-    { className: 'theme-forest',  label: 'Forest'        },
-    { className: 'theme-arctic',  label: 'Arctic'        },
-    { className: 'theme-royal',   label: 'Royal Purple'  }
+    { className: '',              label: 'Midnight Blue', icon: 'fa-palette'             },
+    { className: 'theme-ember',   label: 'Ember',         icon: 'fa-fire-flame-curved'   },
+    { className: 'theme-forest',  label: 'Forest',        icon: 'fa-seedling'            },
+    { className: 'theme-arctic',  label: 'Arctic',        icon: 'fa-snowflake'           },
+    { className: 'theme-miami',   label: 'Miami Glow',    icon: 'fa-wand-magic-sparkles' }
   ];
 
   var STORAGE_KEY = 'aracna-theme';
@@ -40,10 +40,19 @@
 
     localStorage.setItem(STORAGE_KEY, index);
 
-    // Update button label
+    // Update button label and icon
     var btn = document.querySelector('.theme-switcher');
     if (btn) {
       btn.querySelector('.theme-label').textContent = themes[index].label;
+
+      var icon = btn.querySelector('i');
+      if (icon) {
+        var classes = icon.className.split(' ');
+        icon.className = classes.filter(function(c) {
+          return c === 'fa-solid' || !c.startsWith('fa-');
+        }).join(' ');
+        icon.classList.add(themes[index].icon);
+      }
     }
   }
 
