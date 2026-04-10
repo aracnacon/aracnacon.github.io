@@ -137,7 +137,7 @@
   --icon-bullet: "\f0e7";
   --icon-nav: "\f005";
   --icon-heading: "\e0b7";
-  --img-border: 3px solid #ff2d95;
+  --img-border: 4px solid transparent;
   --img-shadow: 0 0 12px rgba(255, 45, 149, 0.5), 0 0 25px rgba(0, 229, 255, 0.3), 0 0 50px rgba(255, 45, 149, 0.2);
   --img-shadow-hover: 0 0 20px rgba(255, 45, 149, 0.7), 0 0 40px rgba(0, 229, 255, 0.5), 0 0 70px rgba(255, 45, 149, 0.3);
 }
@@ -259,6 +259,98 @@ img:hover {
 
 header img {
   animation: fadeInGrow 1s ease-out 0.3s both;
+}
+
+/* Ember — spinning fire border */
+@property --ember-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.theme-ember header {
+  position: relative;
+}
+
+.theme-ember header img {
+  --ember-angle: 0deg;
+  border: 6px solid transparent;
+  background-image: linear-gradient(var(--bg-base), var(--bg-base)),
+                    conic-gradient(from var(--ember-angle), #ff4500, #ffd700, #ff8c00, #ff0000, #ff4500, #ffd700, #ff0000, #ff4500);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  z-index: 1;
+  position: relative;
+  animation: ember-spin 3s linear infinite, ember-flicker 0.2s ease-in-out infinite alternate;
+}
+
+/* Outer flame halo — large soft glow */
+.theme-ember header::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 228px;
+  height: 228px;
+  border-radius: 50%;
+  background: conic-gradient(from 45deg, rgba(255, 69, 0, 0.6), rgba(255, 215, 0, 0.4), rgba(255, 0, 0, 0.5), rgba(255, 140, 0, 0.6), rgba(255, 69, 0, 0.6));
+  filter: blur(12px);
+  animation: ember-spin 4s linear infinite reverse, ember-breathe 1.5s ease-in-out infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Inner flame wisps — tighter, brighter */
+.theme-ember header::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 216px;
+  height: 216px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, rgba(255, 215, 0, 0.7), rgba(255, 69, 0, 0.5), rgba(255, 0, 0, 0.6), rgba(255, 215, 0, 0.4), rgba(255, 140, 0, 0.7), rgba(255, 215, 0, 0.7));
+  filter: blur(6px);
+  animation: ember-spin 2.5s linear infinite, ember-breathe 1s ease-in-out infinite alternate-reverse;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes ember-spin {
+  to { --ember-angle: 360deg; }
+}
+
+@keyframes ember-flicker {
+  0%   { box-shadow: 0 0 10px rgba(255, 69, 0, 0.6), 0 0 25px rgba(255, 140, 0, 0.4), 0 -10px 20px rgba(255, 215, 0, 0.3); }
+  100% { box-shadow: 0 0 15px rgba(255, 69, 0, 0.9), 0 0 35px rgba(255, 140, 0, 0.6), 0 -15px 30px rgba(255, 215, 0, 0.5); }
+}
+
+@keyframes ember-breathe {
+  0%   { transform: translateX(-50%) scale(0.95); opacity: 0.6; }
+  100% { transform: translateX(-50%) scale(1.08); opacity: 1; }
+}
+
+.theme-miami header img {
+  border: 5px solid transparent;
+  background-image: linear-gradient(var(--bg-base), var(--bg-base)),
+                    linear-gradient(45deg, #00e5ff, #ff2d95, #b026ff, #00e5ff);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-size: 100% 100%, 300% 300%;
+  animation: miami-border-spin 4s linear infinite, miami-pulse 2s ease-in-out infinite;
+}
+
+@keyframes miami-border-spin {
+  0%   { background-position: 0 0, 0% 50%; }
+  50%  { background-position: 0 0, 100% 50%; }
+  100% { background-position: 0 0, 0% 50%; }
+}
+
+@keyframes miami-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 45, 149, 0.5), 0 0 25px rgba(0, 229, 255, 0.3); }
+  50%      { box-shadow: 0 0 25px rgba(255, 45, 149, 0.8), 0 0 50px rgba(0, 229, 255, 0.5), 0 0 80px rgba(176, 38, 255, 0.3); }
 }
 
 nav {
