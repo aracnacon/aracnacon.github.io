@@ -12,7 +12,7 @@
 
     <header>
       <h1>United States Marine Corps</h1>
-      <p>The values and discipline that shaped who I am.</p>
+      <p class="typewriter" data-text="The values and discipline that shaped who I am."></p>
     </header>
 
     <nav>
@@ -26,7 +26,7 @@
 
     <main>
 
-      <section>
+      <section class="gs-reveal">
         <h2>My Story</h2>
         <div class="story-row">
           <div>
@@ -43,12 +43,12 @@
             </p>
           </div>
           <div class="story-right">
-            <img
+            <img class="gs-reveal-scale"
               src="images/profile/Marine.png"
               alt="Brandon in Marine uniform"
               width="250"
             />
-            <blockquote>
+            <blockquote class="gs-reveal-left">
               <p><em>"Semper Fidelis!"</em></p>
               <p><strong>— Always Faithful</strong></p>
             </blockquote>
@@ -62,5 +62,9 @@
       <p>&copy; 2026 Brandon Hixson. All rights reserved.</p>
     </footer>
 
+    <script src="js/typewriter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="js/scroll-animations.js"></script>
   </body>
 </html>

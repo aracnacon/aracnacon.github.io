@@ -164,20 +164,7 @@ section {
   margin-bottom: 25px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  animation: fadeInUp 0.6s ease-out both;
 }
-
-section:nth-of-type(1)  { animation-delay: 0.1s; }
-section:nth-of-type(2)  { animation-delay: 0.25s; }
-section:nth-of-type(3)  { animation-delay: 0.4s; }
-section:nth-of-type(4)  { animation-delay: 0.55s; }
-section:nth-of-type(5)  { animation-delay: 0.7s; }
-section:nth-of-type(6)  { animation-delay: 0.85s; }
-section:nth-of-type(7)  { animation-delay: 1.0s; }
-section:nth-of-type(8)  { animation-delay: 1.15s; }
-section:nth-of-type(9)  { animation-delay: 1.3s; }
-section:nth-of-type(10) { animation-delay: 1.45s; }
-section:nth-of-type(11) { animation-delay: 1.6s; }
 
 section:hover {
   transform: translateY(-3px);
@@ -187,8 +174,30 @@ section:hover {
               0 0 40px rgba(30, 144, 255, 0.08);
 }
 
-main > h2 {
-  animation: fadeIn 0.5s ease-out 0.3s both;
+/* ===== GSAP Scroll Reveal Classes ===== */
+
+.gs-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  will-change: opacity, transform;
+}
+
+.gs-reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  will-change: opacity, transform;
+}
+
+.gs-reveal-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  will-change: opacity, transform;
+}
+
+.gs-reveal-right {
+  opacity: 0;
+  transform: translateX(30px);
+  will-change: opacity, transform;
 }
 
 /* ===== Screenshot Gallery ===== */
@@ -407,6 +416,26 @@ header p {
   font-size: 1.1em;
 }
 
+/* Typewriter effect */
+.typewriter {
+  min-height: 1.7em;
+}
+
+.typewriter .cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: #8ab4f8;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* Social Media */
 .social-row {
   display: flex;
@@ -462,33 +491,57 @@ header p {
 
 /* Page Backgrounds */
 .page-home {
-  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('../images/backgrounds/SandBackground.png') center/cover no-repeat fixed;
+  background-image: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('../images/backgrounds/SandBackground.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .page-marines {
-  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('../images/backgrounds/CombatBootPrint.png') center/cover no-repeat fixed;
+  background-image: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('../images/backgrounds/CombatBootPrint.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .page-experience {
-  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('../images/backgrounds/DressShoePrint.png') center/cover no-repeat fixed;
+  background-image: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('../images/backgrounds/DressShoePrint.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .page-projects {
-  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('../images/backgrounds/DressShoePrint.png') center/cover no-repeat fixed;
+  background-image: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('../images/backgrounds/DressShoePrint.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .page-faith {
-  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('../images/backgrounds/BareFoot.png') center/cover no-repeat fixed;
+  background-image: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('../images/backgrounds/BareFoot.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .page-aracnatech {
-  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('../images/backgrounds/SandBackground.png') center/cover no-repeat fixed;
+  background-image: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('../images/backgrounds/SandBackground.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 footer {
@@ -497,7 +550,6 @@ footer {
   padding-top: 20px;
   text-align: center;
   color: #7a8ba8;
-  animation: fadeIn 0.8s ease-out 1s both;
 }
 
 /* Hexagon Grid */
@@ -622,8 +674,12 @@ a.hex {
 
 /* Compare Page Background */
 .page-compare {
-  background: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
-    url('../images/backgrounds/SandBackground.png') center/cover no-repeat fixed;
+  background-image: linear-gradient(rgba(10, 22, 40, 0.85), rgba(10, 22, 40, 0.85)),
+    url('../images/backgrounds/SandBackground.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 /* Demo Layout */
