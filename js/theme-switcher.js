@@ -1,6 +1,7 @@
 /* ── Theme Switcher ────────────────────────────────────────────
-   Cycles through 5 visual themes and persists the choice
-   in localStorage so it survives navigation and refresh.
+   Cycles through 5 visual themes. Picks a random theme on
+   each new session (never the same as last visit). Manual
+   clicks still cycle and persist within the session.
    ──────────────────────────────────────────────────────────── */
 
 (function () {
@@ -14,15 +15,31 @@
     { className: 'theme-miami',   label: 'Miami Glow',    icon: 'fa-wand-magic-sparkles' }
   ];
 
-  var STORAGE_KEY = 'aracna-theme';
+  var SESSION_KEY = 'aracna-theme';
+  var LAST_KEY = 'aracna-theme-last';
 
   /* ── helpers ─────────────────────────────────────────────── */
 
-  function getSavedIndex() {
-    var saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === null) return 0;
-    var idx = parseInt(saved, 10);
-    return (idx >= 0 && idx < themes.length) ? idx : 0;
+  function getStartIndex() {
+    // If already navigating within this session, keep the current theme
+    var session = sessionStorage.getItem(SESSION_KEY);
+    if (session !== null) {
+      var idx = parseInt(session, 10);
+      if (idx >= 0 && idx < themes.length) return idx;
+    }
+
+    // New session — pick a random theme different from last visit
+    var last = localStorage.getItem(LAST_KEY);
+    var lastIdx = last !== null ? parseInt(last, 10) : -1;
+    var pick;
+    do {
+      pick = Math.floor(Math.random() * themes.length);
+    } while (pick === lastIdx);
+
+    // Remember this choice for the session and as the last-used theme
+    sessionStorage.setItem(SESSION_KEY, pick);
+    localStorage.setItem(LAST_KEY, pick);
+    return pick;
   }
 
   function applyTheme(index) {
@@ -38,13 +55,13 @@
       root.classList.add(themes[index].className);
     }
 
-    localStorage.setItem(STORAGE_KEY, index);
+    // Persist within session and remember as last-used
+    sessionStorage.setItem(SESSION_KEY, index);
+    localStorage.setItem(LAST_KEY, index);
 
-    // Update button label and icon
-    var btn = document.querySelector('.theme-switcher');
-    if (btn) {
-      btn.querySelector('.theme-label').textContent = themes[index].label;
-
+    // Update all theme toggle icons on the page
+    var toggles = document.querySelectorAll('.theme-toggle');
+    toggles.forEach(function (btn) {
       var icon = btn.querySelector('i');
       if (icon) {
         var classes = icon.className.split(' ');
@@ -53,26 +70,29 @@
         }).join(' ');
         icon.classList.add(themes[index].icon);
       }
-    }
+    });
   }
 
-  /* ── apply saved theme immediately (before paint) ────────── */
+  /* ── apply theme immediately (before paint) ────────────── */
 
-  var currentIndex = getSavedIndex();
+  var currentIndex = getStartIndex();
   applyTheme(currentIndex);
 
   /* ── wire up button once DOM is ready ────────────────────── */
 
   document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.querySelector('.theme-switcher');
-    if (!btn) return;
+    var toggles = document.querySelectorAll('.theme-toggle');
+    if (!toggles.length) return;
 
-    // Set initial label
-    btn.querySelector('.theme-label').textContent = themes[currentIndex].label;
+    // Set initial icon
+    applyTheme(currentIndex);
 
-    btn.addEventListener('click', function () {
-      currentIndex = (currentIndex + 1) % themes.length;
-      applyTheme(currentIndex);
+    toggles.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % themes.length;
+        applyTheme(currentIndex);
+      });
     });
   });
 })();
