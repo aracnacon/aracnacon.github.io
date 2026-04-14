@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <title>OpenTelemetry - Brandon Hixson</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Inter:wght@400;700&family=Lora:wght@400;700&family=Merriweather:wght@400;700&family=Orbitron:wght@400;700&family=Playfair+Display:wght@400;700&family=Rajdhani:wght@400;700&family=Roboto:wght@400;700&display=swap" />
+  </head>
+  <body class="page-otel">
+
+    <header>
+      <img src="images/profile/MeHeadSun.jpeg" alt="Profile photo of Brandon" width="200" height="200" />
+      <h1><i class="fa-solid fa-satellite-dish"></i> OpenTelemetry</h1>
+      <p class="typewriter" data-text="Instrument once, export anywhere. Vendor-neutral observability at scale."></p>
+    </header>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="experience.html">Experience</a>
+      <a href="projects.html">Projects</a>
+      <a href="aracnatech.html">AracnaTech</a>
+      <a href="faith.html">Faith</a>
+      <a href="marines.html">Marines</a>
+      <a href="contact.html">Contact</a>
+      <a href="#" class="theme-toggle" aria-label="Change theme"><i class="fa-solid fa-palette"></i></a>
+    </nav>
+
+    <main>
+
+      <!-- What Is OpenTelemetry -->
+      <section class="gs-reveal">
+        <h2>What Is OpenTelemetry?</h2>
+        <p>OpenTelemetry (OTel) is a <strong>vendor-neutral, open-source observability framework</strong> governed by the Cloud Native Computing Foundation (CNCF). It provides a single standard for collecting three core signals across any distributed system:</p>
+        <ul>
+          <li><strong>Metrics</strong> &mdash; Numeric measurements over time (CPU usage, latency, error rates, throughput)</li>
+          <li><strong>Traces</strong> &mdash; End-to-end request flows across services, composed of spans with timing and attributes</li>
+          <li><strong>Logs</strong> &mdash; Structured or unstructured event records, bridged from existing loggers into the OTel pipeline</li>
+        </ul>
+        <p>The core principle: <strong>instrument once, export anywhere.</strong> No vendor lock-in. One SDK, any backend.</p>
+      </section>
+
+      <!-- Architecture Overview -->
+      <section class="gs-reveal">
+        <h2>Architecture Overview</h2>
+        <p>Every OTel deployment follows the same pattern &mdash; applications emit telemetry via SDKs, which flows through a central Collector that routes data to your chosen backends:</p>
+        <pre style="background: var(--bg-surface-solid); padding: 20px; border-radius: var(--border-radius); border: 1px solid rgba(var(--color-primary-rgb), 0.3); overflow-x: auto; font-size: 0.85em; line-height: 1.5; color: var(--color-text);">
+┌────────────────────────────────┐
+│         Your Services          │
+│  (SDKs / Auto-Instrumentation) │
+└────────────┬───────────────────┘
+             │ OTLP (gRPC :4317 or HTTP :4318)
+             ▼
+┌────────────────────────────────┐
+│       OTel Collector           │
+│  ┌──────────┐  ┌────────────┐  │
+│  │Receivers │→ │Processors  │  │
+│  └──────────┘  └─────┬──────┘  │
+│                      ▼         │
+│               ┌────────────┐   │
+│               │ Exporters  │   │
+│               └──────┬─────┘   │
+└──────────────────────┼─────────┘
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+   Prometheus       Jaeger        ClickHouse
+   (Metrics)       (Traces)        (Logs)
+        │
+        ▼
+     Grafana
+  (Dashboards)</pre>
+        <ul>
+          <li><strong>Receivers</strong> &mdash; Accept data from apps via OTLP, Prometheus, Jaeger, or Zipkin protocols</li>
+          <li><strong>Processors</strong> &mdash; Transform, filter, batch, and limit memory usage before export</li>
+          <li><strong>Exporters</strong> &mdash; Send processed data to any backend (Prometheus, Jaeger, Datadog, Loki, etc.)</li>
+          <li><strong>Extensions</strong> &mdash; Add-ons like health checks, pprof profiling, and zPages diagnostics</li>
+        </ul>
+      </section>
+
+      <!-- Instrumentation -->
+      <section class="gs-reveal">
+        <h2>Multi-Language Instrumentation</h2>
+        <p>OTel provides SDKs and auto-instrumentation for every major language. Each follows the same pattern &mdash; configure a resource, set up trace and metric exporters, point at your Collector, and start the SDK:</p>
+        <ul>
+          <li><strong>Node.js</strong> &mdash; <code>@opentelemetry/sdk-node</code> with auto-instrumentations for Express, HTTP, and database clients. Load <code>tracing.js</code> before your app entry point via <code>node -r ./tracing.js app.js</code></li>
+          <li><strong>Python</strong> &mdash; <code>opentelemetry-distro</code> with zero-code auto-instrumentation CLI: <code>opentelemetry-instrument --service_name my-service python app.py</code></li>
+          <li><strong>Go</strong> &mdash; <code>go.opentelemetry.io/otel</code> with manual TracerProvider setup and OTLP HTTP exporter</li>
+          <li><strong>Java</strong> &mdash; Spring Boot starter or zero-code Java agent: <code>java -javaagent:opentelemetry-javaagent.jar -jar app.jar</code></li>
+          <li><strong>.NET</strong> &mdash; <code>OpenTelemetry.Extensions.Hosting</code> with ASP.NET Core and HttpClient instrumentation wired in <code>Program.cs</code></li>
+        </ul>
+        <p>Every SDK respects standard environment variables (<code>OTEL_SERVICE_NAME</code>, <code>OTEL_EXPORTER_OTLP_ENDPOINT</code>, <code>OTEL_TRACES_SAMPLER</code>) for zero-code configuration.</p>
+      </section>
+
+      <!-- Hooks & Lifecycle -->
+      <section class="gs-reveal">
+        <h2>Hooks &amp; Lifecycle</h2>
+        <p>OTel hooks let you intercept pipeline stages to add custom attributes, filter noise, and trigger side effects:</p>
+        <ul>
+          <li><strong>SpanProcessor (onStart / onEnd)</strong> &mdash; Inject custom attributes on span creation, log timing on span close, forward to custom sinks</li>
+          <li><strong>HTTP Instrumentation Hooks</strong> &mdash; Enrich inbound/outbound HTTP spans with custom headers, content length, or route metadata. Ignore noise routes like <code>/healthz</code></li>
+          <li><strong>Observable Metric Callbacks</strong> &mdash; Register async callbacks for expensive metrics (CPU usage, queue depth) instead of polling every tick</li>
+          <li><strong>Custom Samplers</strong> &mdash; Route-based or load-based sampling decisions: always capture errors and critical paths, sample 10% of everything else</li>
+          <li><strong>SDK Lifecycle</strong> &mdash; Wire shutdown to SIGTERM/SIGINT to flush buffered telemetry before process exit. Prevents data loss on deploys</li>
+        </ul>
+      </section>
+
+      <!-- Lighthouse & Web Vitals -->
+      <section class="gs-reveal">
+        <h2>Lighthouse &amp; Web Vitals</h2>
+        <p>Bridging frontend performance into the OTel pipeline for unified full-stack observability:</p>
+        <ul>
+          <li><strong>Core Web Vitals &rarr; OTel Metrics</strong> &mdash; Capture LCP, INP, CLS, FCP, and TTFB in the browser using the <code>web-vitals</code> library, export as OTel histograms to the Collector</li>
+          <li><strong>Lighthouse CI</strong> &mdash; Run Lighthouse in CI pipelines, push performance/accessibility/SEO scores as OTel metrics for trend tracking in Grafana</li>
+          <li><strong>Alerting</strong> &mdash; Prometheus alerting rules on CWV thresholds: P75 LCP &gt; 2.5s, CLS &gt; 0.1, Lighthouse performance drops below 85%</li>
+        </ul>
+
+        <h3>Core Web Vitals Thresholds</h3>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+              <tr style="border-bottom: 2px solid rgba(var(--color-primary-rgb), 0.4);">
+                <th style="text-align: left; padding: 8px; color: var(--color-secondary);">Metric</th>
+                <th style="text-align: left; padding: 8px; color: #2ecc71;">Good</th>
+                <th style="text-align: left; padding: 8px; color: #f39c12;">Needs Improvement</th>
+                <th style="text-align: left; padding: 8px; color: #e74c3c;">Poor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.15);">
+                <td style="padding: 8px; font-weight: bold;">LCP</td>
+                <td style="padding: 8px;">&le; 2.5s</td>
+                <td style="padding: 8px;">&le; 4.0s</td>
+                <td style="padding: 8px;">&gt; 4.0s</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.15);">
+                <td style="padding: 8px; font-weight: bold;">INP</td>
+                <td style="padding: 8px;">&le; 200ms</td>
+                <td style="padding: 8px;">&le; 500ms</td>
+                <td style="padding: 8px;">&gt; 500ms</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.15);">
+                <td style="padding: 8px; font-weight: bold;">CLS</td>
+                <td style="padding: 8px;">&le; 0.1</td>
+                <td style="padding: 8px;">&le; 0.25</td>
+                <td style="padding: 8px;">&gt; 0.25</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.15);">
+                <td style="padding: 8px; font-weight: bold;">FCP</td>
+                <td style="padding: 8px;">&le; 1.8s</td>
+                <td style="padding: 8px;">&le; 3.0s</td>
+                <td style="padding: 8px;">&gt; 3.0s</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold;">TTFB</td>
+                <td style="padding: 8px;">&le; 800ms</td>
+                <td style="padding: 8px;">&le; 1800ms</td>
+                <td style="padding: 8px;">&gt; 1800ms</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Collector & Deployment -->
+      <section class="gs-reveal">
+        <h2>Collector &amp; Deployment</h2>
+        <p>The OTel Collector is the central routing component that decouples your application from its backend. I deploy it as part of a full observability stack:</p>
+        <ul>
+          <li><strong>Docker Compose</strong> &mdash; Collector + Jaeger + Prometheus + Grafana in a single <code>docker-compose.yml</code>. OTLP ports (4317 gRPC, 4318 HTTP) exposed, Prometheus scrapes at :8889, Jaeger UI at :16686</li>
+          <li><strong>Kubernetes (Helm)</strong> &mdash; OTel Operator via Helm chart, DaemonSet or Sidecar mode. Auto-instrumentation via pod annotations: <code>instrumentation.opentelemetry.io/inject-python: "true"</code></li>
+          <li><strong>Pipeline Config</strong> &mdash; YAML-driven pipelines: receivers (OTLP + Prometheus scrape) &rarr; processors (memory_limiter, batch, filter health checks) &rarr; exporters (Prometheus, Jaeger, Loki)</li>
+          <li><strong>Security</strong> &mdash; TLS on Collector endpoints in production, auth headers for SaaS backends, sensitive data filtering in processors, health/debug endpoints blocked from public access</li>
+        </ul>
+      </section>
+
+      <!-- Observability Stack — Hex Grid -->
+      <h2>Observability Stack</h2>
+
+      <div class="hex-grid">
+
+        <div class="hex-group hex-blue gs-reveal">
+          <h2 class="hex-label">Signals</h2>
+          <div class="hex-row">
+            <div class="hex">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Metrics</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-route"></i>
+              <span>Traces</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-file-lines"></i>
+              <span>Logs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hex-group hex-teal gs-reveal">
+          <h2 class="hex-label">Collector Pipeline</h2>
+          <div class="hex-row">
+            <div class="hex">
+              <i class="fa-solid fa-tower-broadcast"></i>
+              <span>Receivers</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-gears"></i>
+              <span>Processors</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-share-nodes"></i>
+              <span>Exporters</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-puzzle-piece"></i>
+              <span>Extensions</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hex-group hex-green gs-reveal">
+          <h2 class="hex-label">Backends</h2>
+          <div class="hex-row">
+            <div class="hex">
+              <i class="devicon-prometheus-original"></i>
+              <span>Prometheus</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-magnifying-glass-chart"></i>
+              <span>Jaeger</span>
+            </div>
+            <div class="hex">
+              <i class="devicon-grafana-original"></i>
+              <span>Grafana</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-scroll"></i>
+              <span>Loki</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-music"></i>
+              <span>Tempo</span>
+            </div>
+            <div class="hex">
+              <i class="fa-solid fa-database"></i>
+              <span>ClickHouse</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hex-group hex-purple gs-reveal">
+          <h2 class="hex-label">Languages</h2>
+          <div class="hex-row">
+            <div class="hex">
+              <i class="devicon-nodejs-plain"></i>
+              <span>Node.js</span>
+            </div>
+            <div class="hex">
+              <i class="devicon-python-plain"></i>
+              <span>Python</span>
+            </div>
+            <div class="hex">
+              <i class="devicon-go-original-wordmark"></i>
+              <span>Go</span>
+            </div>
+            <div class="hex">
+              <i class="devicon-java-plain"></i>
+              <span>Java</span>
+            </div>
+            <div class="hex">
+              <i class="devicon-dotnetcore-plain"></i>
+              <span>.NET</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hex-group hex-orange gs-reveal">
+          <h2 class="hex-label">Deployment</h2>
+          <div class="hex-row">
+            <div class="hex">
+              <i class="devicon-docker-plain"></i>
+              <span>Docker</span>
+            </div>
+            <div class="hex">
+              <i class="devicon-kubernetes-plain"></i>
+              <span>Kubernetes</span>
+            </div>
+            <div class="hex">
+              <i class="devicon-helm-original"></i>
+              <span>Helm</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Exporter Compatibility -->
+      <section class="gs-reveal">
+        <h2>Exporter Compatibility</h2>
+        <p>OTel's vendor-neutral design means you can swap backends without changing application code. If a backend supports OTLP natively, use the <code>otlp</code> exporter directly:</p>
+        <ul>
+          <li><strong>Prometheus</strong> &mdash; Metrics (exposes scrape endpoint)</li>
+          <li><strong>Jaeger / Tempo</strong> &mdash; Traces (OTLP native)</li>
+          <li><strong>Loki</strong> &mdash; Logs (Grafana's log backend)</li>
+          <li><strong>ClickHouse</strong> &mdash; All signals at scale</li>
+          <li><strong>Elasticsearch</strong> &mdash; Logs and trace search</li>
+          <li><strong>Datadog / New Relic / Honeycomb / Dynatrace</strong> &mdash; SaaS backends via OTLP or named exporters</li>
+        </ul>
+      </section>
+
+      <!-- Build Checklist -->
+      <section class="gs-reveal">
+        <h2>My Build Checklist</h2>
+        <p>Every service I instrument follows this checklist to ensure complete, production-ready observability:</p>
+        <ul>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> OTel SDK added with <code>service.name</code>, <code>service.version</code>, and <code>environment</code> resource attributes</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> Trace and metric exporters configured pointing to the Collector</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> Auto-instrumentation enabled for HTTP, database, and messaging libraries</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> Context propagation configured (<code>tracecontext</code> + <code>baggage</code>)</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> SDK shutdown wired to SIGTERM for graceful buffer flushing</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> Collector deployed with <code>memory_limiter</code> and <code>batch</code> processors</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> Health check routes filtered to reduce trace noise</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> TLS and auth headers configured for production endpoints</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> Dashboards created for golden signals (latency, errors, throughput, saturation)</li>
+          <li><i class="fa-solid fa-check" style="color: #2ecc71; margin-right: 6px;"></i> Alerts configured on key metrics and CWV regressions</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Brandon Hixson. All rights reserved.</p>
+    </footer>
+
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/typewriter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="js/scroll-animations.js"></script>
+
+  </body>
+</html>

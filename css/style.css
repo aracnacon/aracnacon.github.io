@@ -268,7 +268,7 @@ header img {
   inherits: false;
 }
 
-.theme-ember header {
+.theme-ember body:not(.page-projects) header {
   position: relative;
 }
 
@@ -284,8 +284,8 @@ header img {
   animation: ember-spin 3s linear infinite, ember-flicker 0.2s ease-in-out infinite alternate;
 }
 
-/* Outer flame halo — large soft glow */
-.theme-ember header::before {
+/* Outer flame halo — large soft glow (all pages except projects) */
+.theme-ember body:not(.page-projects) header::before {
   content: '';
   position: absolute;
   top: -14px;
@@ -301,8 +301,8 @@ header img {
   pointer-events: none;
 }
 
-/* Inner flame wisps — tighter, brighter */
-.theme-ember header::after {
+/* Inner flame wisps — tighter, brighter (all pages except projects) */
+.theme-ember body:not(.page-projects) header::after {
   content: '';
   position: absolute;
   top: -8px;
@@ -791,12 +791,7 @@ header p {
 }
 
 .page-projects {
-  background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
-    url('../images/backgrounds/DressShoePrint.png');
-  background-position: 50% 50%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: var(--bg-base);
 }
 
 .page-faith {
@@ -991,6 +986,15 @@ a.hex {
 .page-compare {
   background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
     url('../images/backgrounds/SandBackground.png');
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.page-otel {
+  background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+    url('../images/backgrounds/SwampBoots.png');
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
