@@ -281,6 +281,88 @@
         </div>
       </section>
 
+      <!-- Demo 6: Loading States -->
+      <section class="gs-reveal">
+        <h2>Loading States</h2>
+        <p>Click "Reload" in each panel to see how they handle loading.</p>
+        <div class="demo-row">
+
+          <div class="demo-panel demo-legacy">
+            <span class="demo-label demo-label-legacy">Legacy</span>
+            <div id="legacy-load-content">
+              <p style="margin-bottom: 6px;"><strong>Employee List</strong></p>
+              <p style="font-size: 13px;">John Smith — Technician</p>
+              <p style="font-size: 13px;">Mary Johnson — Manager</p>
+              <p style="font-size: 13px;">Bob Williams — Driver</p>
+            </div>
+            <div id="legacy-load-spinner" style="display: none; text-align: center; padding: 30px 0;">
+              <div class="legacy-spinner"></div>
+              <p style="font-size: 12px; color: #666; margin-top: 8px;">Loading, please wait...</p>
+            </div>
+            <button onclick="legacyReload()" style="margin-top: 10px; background: #d4d4d4; color: #000; border: 2px outset #999; border-radius: 0; padding: 6px 16px; font-family: 'Times New Roman', serif; cursor: pointer; font-size: 13px;">Reload</button>
+          </div>
+
+          <div class="demo-panel demo-modern">
+            <span class="demo-label demo-label-modern">Modern</span>
+            <div id="modern-load-content">
+              <p style="margin-bottom: 6px;"><strong>Employee List</strong></p>
+              <p style="font-size: 13px;">John Smith — Technician</p>
+              <p style="font-size: 13px;">Mary Johnson — Manager</p>
+              <p style="font-size: 13px;">Bob Williams — Driver</p>
+            </div>
+            <div id="modern-load-skeleton" style="display: none;">
+              <div class="skeleton-line skeleton-line-wide"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line skeleton-line-short"></div>
+            </div>
+            <button onclick="modernReload()" style="margin-top: 10px; background: linear-gradient(135deg, #1e90ff, #4da6ff); color: #0a1628; border: none; border-radius: 25px; padding: 8px 22px; font-weight: bold; cursor: pointer; font-size: 13px; transition: all 0.3s ease;">Reload</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Demo 7: Hover & Motion -->
+      <section class="gs-reveal">
+        <h2>Hover &amp; Motion</h2>
+        <p>Move your mouse over the cards in each panel.</p>
+        <div class="demo-row">
+
+          <div class="demo-panel demo-legacy">
+            <span class="demo-label demo-label-legacy">Legacy</span>
+            <div class="legacy-hover-card">
+              <p style="font-weight: bold; margin-bottom: 4px;">Open Tickets</p>
+              <p style="font-size: 22px;">14</p>
+            </div>
+            <div class="legacy-hover-card">
+              <p style="font-weight: bold; margin-bottom: 4px;">Active Staff</p>
+              <p style="font-size: 22px;">38</p>
+            </div>
+            <div class="legacy-hover-card">
+              <p style="font-weight: bold; margin-bottom: 4px;">Overdue Tasks</p>
+              <p style="font-size: 22px;">3</p>
+            </div>
+          </div>
+
+          <div class="demo-panel demo-modern">
+            <span class="demo-label demo-label-modern">Modern</span>
+            <div class="modern-hover-card">
+              <p style="font-weight: bold; margin-bottom: 4px;">Open Tickets</p>
+              <p style="font-size: 22px; color: #4da6ff;">14</p>
+            </div>
+            <div class="modern-hover-card">
+              <p style="font-weight: bold; margin-bottom: 4px;">Active Staff</p>
+              <p style="font-size: 22px; color: #2ecc71;">38</p>
+            </div>
+            <div class="modern-hover-card">
+              <p style="font-weight: bold; margin-bottom: 4px;">Overdue Tasks</p>
+              <p style="font-size: 22px; color: #e74c3c;">3</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       <!-- CTA -->
       <section class="gs-reveal">
         <h2>Ready to Modernize?</h2>
@@ -393,6 +475,38 @@
       }
 
       /* === Toast Notifications === */
+      /* === Loading Demos === */
+      function legacyReload() {
+        var content = document.getElementById('legacy-load-content');
+        var spinner = document.getElementById('legacy-load-spinner');
+        content.style.display = 'none';
+        spinner.style.display = 'block';
+        setTimeout(function() {
+          spinner.style.display = 'none';
+          content.style.display = 'block';
+        }, 2000);
+      }
+
+      function modernReload() {
+        var content = document.getElementById('modern-load-content');
+        var skeleton = document.getElementById('modern-load-skeleton');
+        content.style.opacity = '0';
+        content.style.transition = 'opacity 0.2s ease';
+        setTimeout(function() {
+          content.style.display = 'none';
+          skeleton.style.display = 'block';
+          setTimeout(function() {
+            skeleton.style.display = 'none';
+            content.style.display = 'block';
+            // Small delay to trigger transition
+            requestAnimationFrame(function() {
+              content.style.opacity = '1';
+              content.style.transition = 'opacity 0.4s ease';
+            });
+          }, 1500);
+        }, 200);
+      }
+
       function showToast(id, message, color) {
         var toast = document.getElementById(id);
         toast.textContent = message;

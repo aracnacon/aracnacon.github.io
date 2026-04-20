@@ -1338,6 +1338,79 @@ a.hex {
   font-weight: bold;
 }
 
+/* ===== Loading Demo — Legacy Spinner ===== */
+
+.legacy-spinner {
+  width: 32px;
+  height: 32px;
+  border: 4px solid #ccc;
+  border-top: 4px solid #666;
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: legacy-spin 1.2s linear infinite;
+}
+
+@keyframes legacy-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Loading Demo — Modern Skeleton Shimmer ===== */
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.08) 25%, rgba(var(--color-primary-rgb), 0.18) 50%, rgba(var(--color-primary-rgb), 0.08) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  width: 85%;
+}
+
+.skeleton-line-wide {
+  width: 60%;
+  height: 18px;
+}
+
+.skeleton-line-short {
+  width: 50%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Hover Demo — Legacy Cards ===== */
+
+.legacy-hover-card {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  font-family: 'Times New Roman', serif;
+  color: #333;
+  font-size: 13px;
+}
+
+/* ===== Hover Demo — Modern Cards ===== */
+
+.modern-hover-card {
+  background: var(--bg-surface-solid);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+  border-radius: var(--border-radius);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--color-text);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.modern-hover-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.2), 0 0 15px rgba(var(--color-primary-rgb), 0.1);
+}
+
 /* ===== Theme Toggle (Nav Link) ===== */
 
 nav a.theme-toggle {
