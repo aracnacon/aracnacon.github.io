@@ -19,7 +19,7 @@
       align-items: center;
       justify-content: center;
       cursor: none;
-      transition: all 1400ms ease-out;
+      transition: all 3000ms ease-out;
     }
     #splash-screen.dissolve {
       opacity: 0;
@@ -224,8 +224,12 @@
     if (gone) return;
     gone = true;
     splash.classList.add('dissolve');
-    setTimeout(() => splash.remove(), 1400);
+    setTimeout(() => splash.remove(), 3000);
   }
 
-  splash.addEventListener('mousemove', dissolve);
+  // Click dismisses immediately
+  splash.addEventListener('click', dissolve);
+
+  // Auto-dismiss after 3 seconds
+  setTimeout(dissolve, 3000);
 })();

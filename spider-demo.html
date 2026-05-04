@@ -176,6 +176,17 @@
       background: #00ffcc22;
       box-shadow: 0 0 24px #00ffcc88;
     }
+    .home-link {
+      display: block;
+      margin-top: 1.2rem;
+      font-size: 0.85rem;
+      color: #00ffcc;
+      opacity: 0.55;
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: opacity 0.2s;
+    }
+    .home-link:hover { opacity: 1; }
   </style>
 </head>
 <body>
@@ -202,12 +213,14 @@
     <li>You have 3 lives — make them count</li>
   </ul>
   <button id="start-btn">START MISSION</button>
+  <a href="index.html" class="home-link">← Back to Home</a>
 </div>
 
 <div id="game-over">
   <h1 id="go-title">BURNED</h1>
   <p id="go-score">Final score: 0</p>
   <button id="restart-btn">RESTART</button>
+  <a href="index.html" class="home-link">← Back to Home</a>
 </div>
 
 <script>
