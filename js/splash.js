@@ -83,14 +83,14 @@
 
   // Each entry: [groupId, [path ids to move], cssClass]
   const armDefs = [
-    ['phone-arm-group',    ['path21','path22','path23']],
+    ['phone-arm-group',    ['path21','path22','path23','rect54']],
     ['plug-arm-group',     ['path25','path26']],
     ['wrench1-arm-group',  ['path35','path36']],
     ['wrench2-arm-group',  ['path38','path39']],
     ['hammer-arm-group',   ['path31','path32','path33']],
     ['magglass-arm-group', ['path27','path28','path29','path51']],
-    ['gear-leg-group',     ['path41','path42','path49']],
-    ['brief-leg-group',    ['path44','path45']],
+    ['gear-leg-group',     ['path41','path42','ellipse49']],
+    ['brief-leg-group',    ['path44','path45','path49','rect51','rect52','rect53']],
   ];
 
   fetch('images/spiderTrace.svg')
@@ -100,8 +100,14 @@
       wrap.innerHTML = svg;
       const svgEl = wrap.querySelector('svg');
 
+      // Hide the static background trace layer (path2/3/4 in Top layer)
+      ['path2','path3','path4'].forEach(id => {
+        const el = svgEl.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+
       // Fill cutout shapes with black to match splash background
-      ['path22','path26','path42','path45'].forEach(id => {
+      ['path23','path49','ellipse49','rect51','rect52','rect53'].forEach(id => {
         const el = svgEl.getElementById(id);
         if (el) { el.style.fill = '#000000'; el.style.stroke = 'none'; }
       });

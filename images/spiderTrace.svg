@@ -26,13 +26,13 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="2.298097"
      inkscape:cx="660.98166"
-     inkscape:cy="308.7337"
+     inkscape:cy="239.11088"
      inkscape:window-width="1920"
      inkscape:window-height="1022"
      inkscape:window-x="1920"
      inkscape:window-y="30"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer9" />
+     inkscape:current-layer="layer2" />
   <g
      inkscape:groupmode="layer"
      inkscape:label="Top"
@@ -92,11 +92,6 @@
        d="m 753.66705,348.54925 h 50.0414 l 4.78657,-4.78657 v -9.13799 l 0.43514,-84.41767 -3.91628,-4.78657 -33.50599,-1.30543 -18.71113,1.30543 -3.48114,0.87028 -1.30543,9.57314 -0.43514,86.59338 z"
        id="path22"
        inkscape:label="Phone" />
-    <path
-       style="fill:#808080;fill-opacity:1"
-       d="m 764.11047,259.34501 h 32.20055 l 0.43515,34.81141 -30.89513,-1.74057 z"
-       id="path23"
-       inkscape:label="PhoneScreen" />
   </g>
   <g
      inkscape:groupmode="layer"
