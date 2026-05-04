@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spider Demo</title>
+  <title>Spider Fire Fighter</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -11,48 +11,37 @@
       overflow: hidden;
       width: 100vw;
       height: 100vh;
+      cursor: crosshair;
+      user-select: none;
+    }
+
+    #game-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
     }
 
     #spider {
       position: fixed;
-      width: 220px;
-      height: 220px;
+      width: 180px;
+      height: 180px;
       will-change: transform;
+      z-index: 2;
+      pointer-events: none;
     }
-
     #spider svg {
       width: 100%;
       height: 100%;
       overflow: visible;
     }
 
-    /* ── Limb walk cycle ─────────────────────────────────────── */
+    /* ── Limb walk cycle ── */
     .limb { transform-box: fill-box; }
-
-    /* Right upper → pivot from bottom-left */
-    #lw-phone,
-    #lw-plug   { transform-origin: 0% 100%; }
-
-    /* Right lower → pivot from top-left */
-    #lw-gear,
-    #lw-brief  { transform-origin: 0% 0%; }
-
-    /* Left upper → pivot from bottom-right */
-    #lw-wrench1,
-    #lw-wrench2 { transform-origin: 100% 100%; }
-
-    /* Left lower → pivot from top-right */
-    #lw-magglass,
-    #lw-hammer  { transform-origin: 100% 0%; }
-
-    /* Pair A — phase 0 */
-    #lw-phone, #lw-gear, #lw-wrench1, #lw-magglass {
-      animation: walk-a 0.14s linear infinite;
-    }
-    /* Pair B — phase 180° (starts reversed) */
-    #lw-plug, #lw-brief, #lw-wrench2, #lw-hammer {
-      animation: walk-b 0.14s linear infinite;
-    }
+    #lw-phone,   #lw-gear     { transform-origin: 0%   100%; animation: walk-a 0.14s linear infinite; }
+    #lw-wrench1, #lw-magglass { transform-origin: 100% 100%; animation: walk-a 0.14s linear infinite; }
+    #lw-plug,    #lw-brief    { transform-origin: 0%   0%;   animation: walk-b 0.14s linear infinite; }
+    #lw-wrench2, #lw-hammer   { transform-origin: 100% 0%;   animation: walk-b 0.14s linear infinite; }
 
     @keyframes walk-a {
       0%   { transform: rotate(-8deg); }
@@ -64,31 +53,158 @@
       50%  { transform: rotate(-8deg); }
       100% { transform: rotate( 8deg); }
     }
-
-    /* Idle — freeze legs */
     #spider.idle .limb { animation-play-state: paused; }
 
-    /* rotation handled via JS transform, no CSS flip needed */
+    @keyframes spider-flash {
+      0%, 100% { opacity: 1; filter: none; }
+      50%      { opacity: 0.15; filter: drop-shadow(0 0 12px #00ff41); }
+    }
+    #spider.hit { animation: spider-flash 0.12s linear 8; }
+
+    @keyframes score-pop {
+      0%   { transform: translateX(-50%) scale(1);    color: #00ffcc; }
+      40%  { transform: translateX(-50%) scale(1.45); color: #ffffff; }
+      100% { transform: translateX(-50%) scale(1);    color: #00ffcc; }
+    }
+    #hud.score-pop { animation: score-pop 0.35s ease-out; }
+
+    /* ── HUD ── */
+    #hud {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      font-family: ui-monospace, 'Courier New', monospace;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #00ffcc;
+      text-shadow: 0 0 8px #00ffcc;
+      display: flex;
+      gap: 2.5rem;
+      pointer-events: none;
+    }
+
+    /* ── Game Over ── */
+    #game-over {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.75);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, 'Courier New', monospace;
+      color: #ff3300;
+      text-shadow: 0 0 20px #ff3300;
+    }
+    #game-over.show { display: flex; }
+    #game-over h1 { font-size: 4rem; letter-spacing: 0.2em; margin-bottom: 1rem; }
+    #game-over p  { font-size: 1.2rem; color: #fff; opacity: 0.7; margin-bottom: 2rem; }
+    #game-over button {
+      padding: 0.8rem 2.5rem;
+      background: transparent;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      font-family: inherit;
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-shadow: 0 0 8px #00ffcc;
+      box-shadow: 0 0 12px #00ffcc44;
+      transition: all 0.2s;
+    }
+    #game-over button:hover {
+      background: #00ffcc22;
+      box-shadow: 0 0 24px #00ffcc88;
+    }
   </style>
 </head>
 <body>
 
+<canvas id="game-canvas"></canvas>
 <div id="spider"></div>
+
+<div id="hud">
+  <span>Score: <b id="hud-score">0</b></span>
+  <span>Fires: <b id="hud-fires">0</b></span>
+  <span>Heat: <b id="hud-heat">0%</b></span>
+  <span>Lives: <b id="hud-lives">◆◆◆</b></span>
+</div>
+
+<div id="game-over">
+  <h1 id="go-title">BURNED</h1>
+  <p id="go-score">Final score: 0</p>
+  <button id="restart-btn">RESTART</button>
+</div>
 
 <script>
 (function () {
-  const TOOL_IDS  = ['path2','path3','path4',          // bg trace
-                     'path26',                          // Plug
-                     'path22','path23','rect54',        // Phone + screen
-                     'path42','ellipse49',              // Gear
-                     'path45','path49',                 // BriefCase
-                     'rect51','rect52','rect53',        // BriefCase details
-                     'path29','path51',                 // MagGlass
-                     'path32','path33',                 // Hammer head+handle
-                     'path36',                         // Wrench1
-                     'path39'];                        // Wrench2
 
-  // Segment path IDs grouped per limb  [groupId, [pathIds]]
+  // ── Config ──────────────────────────────────────────────────────
+  const SIZE         = 180;
+  const HALF         = SIZE / 2;
+  const SPIDER_SPEED = 6;
+  const FIRE_MAX     = 8;        // game over threshold
+  const FIRE_SPAWN_MS = 3000;
+  const FIRE_GROW_RATE = 0.012;  // radius per frame
+  const FIRE_MAX_R   = 45;
+  const FIRE_MIN_R   = 10;
+  const LASER_DAMAGE   = 18;
+  const LASER_LIFE     = 180;    // ms
+  const LASER_MAX_RANGE = 480;   // px — disconnects beyond this
+  const MAX_LASERS   = 8;        // active bolt cap
+  const MAX_PARTICLES = 150;     // hit-particle cap
+
+  // ── State ───────────────────────────────────────────────────────
+  let fires = [], lasers = [];
+  let score = 0, isOver = false;
+  let lives = 3, invincible = false, invincTimer = null;
+  let spawnTimer = null;
+  let x = 0, y = 0, angle = 270;
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+
+  // ── Canvas ──────────────────────────────────────────────────────
+  const canvas = document.getElementById('game-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // ── HUD ─────────────────────────────────────────────────────────
+  const hudScore = document.getElementById('hud-score');
+  const hudFires = document.getElementById('hud-fires');
+  const hudHeat  = document.getElementById('hud-heat');
+  const hudLives = document.getElementById('hud-lives');
+  const gameOverEl = document.getElementById('game-over');
+  const goTitle    = document.getElementById('go-title');
+  const goScore    = document.getElementById('go-score');
+
+  function updateHUD() {
+    hudScore.textContent = score;
+    hudFires.textContent = fires.length;
+    hudHeat.textContent  = Math.round((fires.length / FIRE_MAX) * 100) + '%';
+    hudHeat.style.color  = fires.length >= FIRE_MAX * 0.75 ? '#ff3300' : '#00ffcc';
+    hudLives.textContent = '◆'.repeat(lives) + '◇'.repeat(3 - lives);
+    hudLives.style.color = lives === 1 ? '#ff3300' : '#00ffcc';
+  }
+
+  // ── Spider SVG setup ────────────────────────────────────────────
+  const spiderEl = document.getElementById('spider');
+
+  const TOOL_IDS = [
+    'path2','path3','path4','path26','path22','path23','rect54',
+    'path42','ellipse49','path45','path49','rect51','rect52','rect53',
+    'path29','path51','path32','path33','path36','path39'
+  ];
   const LIMBS = [
     ['lw-phone',    ['path20','path21']],
     ['lw-plug',     ['path24','path25']],
@@ -99,206 +215,675 @@
     ['lw-wrench1',  ['path34','path35']],
     ['lw-wrench2',  ['path37','path38']],
   ];
-
-  const BODY_IDS = ['path13','path14','path15','path16','path17'];
-
-  const spiderEl = document.getElementById('spider');
+  const OUTER_IDS = ['path13','path14','path15','path16'];
 
   fetch('images/spiderTrace.svg')
     .then(r => r.text())
     .then(raw => {
       spiderEl.innerHTML = raw;
       const svg = spiderEl.querySelector('svg');
-
-      // Crop viewBox to spider extent
       svg.setAttribute('viewBox', '80 140 860 730');
 
-      // Hide tools and background
       TOOL_IDS.forEach(id => {
         const el = svg.getElementById(id);
         if (el) el.style.display = 'none';
       });
 
-      // Wrap each limb pair in an animated group
-      LIMBS.forEach(([groupId, pathIds]) => {
+      LIMBS.forEach(([gid, ids]) => {
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.id = groupId;
-        g.classList.add('limb');
-        pathIds.forEach(id => {
+        g.id = gid; g.classList.add('limb');
+        ids.forEach(id => {
           const el = svg.getElementById(id);
           if (el) g.appendChild(el);
         });
         svg.appendChild(g);
       });
 
-      // ── Electric inner-body circuit animation ──────────────────
-      const innerBody = svg.getElementById('path17');
-      const outerIds  = ['path13','path14','path15','path16'];
+      // Electric inner body
+      const inner = svg.getElementById('path17');
+      if (inner) {
+        inner.style.fill = '#0d0d0d';
 
-      if (innerBody) {
-        innerBody.style.fill = '#0d0d0d';
+        const glow = inner.cloneNode(true);
+        glow.removeAttribute('id');
+        glow.style.cssText = 'fill:none;stroke:#00ffcc;stroke-width:3';
+        glow.classList.add('circuit-glow');
+        svg.appendChild(glow);
 
-        // Dim base glow
-        const circuitGlow = innerBody.cloneNode(true);
-        circuitGlow.removeAttribute('id');
-        circuitGlow.style.cssText = 'fill:none;stroke:#00ffcc;stroke-width:3';
-        circuitGlow.classList.add('circuit-glow');
-        svg.appendChild(circuitGlow);
-
-        // Traveling spark
-        const spark = innerBody.cloneNode(true);
+        const spark = inner.cloneNode(true);
         spark.removeAttribute('id');
         spark.style.cssText = 'fill:none;stroke:#e0ffff;stroke-width:2';
         spark.classList.add('electric-spark');
         svg.appendChild(spark);
 
-        // Mark outer body for bulb effect
-        outerIds.forEach(id => {
+        OUTER_IDS.forEach(id => {
           const el = svg.getElementById(id);
           if (el) el.classList.add('outer-bulb');
         });
 
         requestAnimationFrame(() => requestAnimationFrame(() => {
-          const len  = spark.getTotalLength();
+          const len   = spark.getTotalLength();
           const pulse = len * 0.07;
-          const cycleDuration = 1600;
-          const bulbDuration  = 1500;
-          const pauseBetween  = 400;
+          const cycle = 1600;
 
           const st = document.createElement('style');
           st.textContent = `
-            .circuit-glow {
-              animation: circuit-breathe 2s ease-in-out infinite alternate;
-              filter: drop-shadow(0 0 2px #00ffcc);
-            }
-            @keyframes circuit-breathe {
-              from { opacity: 0.08; }
-              to   { opacity: 0.3; }
-            }
+            .circuit-glow { animation: circuit-breathe 2s ease-in-out infinite alternate; filter: drop-shadow(0 0 2px #00ffcc); }
+            @keyframes circuit-breathe { from { opacity:0.08; } to { opacity:0.3; } }
             .electric-spark {
-              stroke-dasharray: ${pulse.toFixed(1)} ${(len - pulse).toFixed(1)};
+              stroke-dasharray: ${pulse.toFixed(1)} ${(len-pulse).toFixed(1)};
               stroke-dashoffset: ${len.toFixed(1)};
-              animation: spark-travel ${cycleDuration}ms linear infinite;
+              animation: spark-travel ${cycle}ms linear infinite;
               filter: drop-shadow(0 0 2px #00ffcc) drop-shadow(0 0 5px #fff);
             }
-            @keyframes spark-travel {
-              to { stroke-dashoffset: 0; }
-            }
-            .outer-bulb.bulb-on {
-              animation: bulb-settle 1.5s ease-out forwards;
-            }
+            @keyframes spark-travel { to { stroke-dashoffset: 0; } }
+            .outer-bulb.bulb-on { animation: bulb-settle 1.5s ease-out forwards; }
             @keyframes bulb-settle {
-              0%   { fill: #808080; filter: none; }
-              5%   { fill: #ffffff; filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px #ffe57a); }
-              30%  { fill: #fffde7; filter: drop-shadow(0 0 15px #ffe57a) drop-shadow(0 0 30px #ffe57a); }
-              100% { fill: #fff8e1; filter: drop-shadow(0 0 4px #ffe57a) drop-shadow(0 0 10px #ffe57a); }
+              0%   { fill:#808080; filter:none; }
+              5%   { fill:#ffffff; filter:drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px #ffe57a); }
+              30%  { fill:#fffde7; filter:drop-shadow(0 0 15px #ffe57a) drop-shadow(0 0 30px #ffe57a); }
+              100% { fill:#fff8e1; filter:drop-shadow(0 0 4px #ffe57a) drop-shadow(0 0 10px #ffe57a); }
             }
           `;
           document.head.appendChild(st);
 
-          function fireSequence() {
+          function fireBulb() {
             setTimeout(() => {
-              outerIds.forEach(id => {
-                const el = svg.getElementById(id);
-                if (el) el.classList.add('bulb-on');
-              });
+              OUTER_IDS.forEach(id => { const el = svg.getElementById(id); if(el) el.classList.add('bulb-on'); });
               setTimeout(() => {
-                outerIds.forEach(id => {
-                  const el = svg.getElementById(id);
-                  if (el) el.classList.remove('bulb-on');
-                });
-                setTimeout(fireSequence, pauseBetween);
-              }, bulbDuration);
-            }, cycleDuration * 2);
+                OUTER_IDS.forEach(id => { const el = svg.getElementById(id); if(el) el.classList.remove('bulb-on'); });
+                setTimeout(fireBulb, 400);
+              }, 1500);
+            }, cycle * 2);
           }
-          fireSequence();
+          fireBulb();
         }));
       }
-
-      // Kick off movement
-      startMovement();
     });
 
-  // ── Movement ────────────────────────────────────────────────
-
-  const SIZE = 220;
-  let x, y, targetX, targetY, angle = 0, running = false;
-  let idleTimer = null;
-
-  function W() { return window.innerWidth; }
-  function H() { return window.innerHeight; }
+  // ── Spider movement (follows mouse) ─────────────────────────────
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
 
   function setTransform(nx, ny, deg) {
     x = nx; y = ny; angle = deg;
-    spiderEl.style.transform =
-      `translate(${x}px, ${y}px) rotate(${deg}deg)`;
+    spiderEl.style.transform = `translate(${x}px,${y}px) rotate(${deg}deg)`;
   }
 
-  function pickTarget() {
-    const pad = SIZE;
-    targetX = pad + Math.random() * (W() - SIZE - pad * 2);
-    targetY = pad + Math.random() * (H() - SIZE - pad * 2);
+  function spiderCenter() {
+    return { sx: x + HALF, sy: y + HALF };
   }
 
-  function idle() {
-    spiderEl.classList.add('idle');
-    running = false;
-    idleTimer = setTimeout(dash, 400 + Math.random() * 1800);
-  }
+  function tickSpider() {
+    const tx = mouseX - HALF;
+    const ty = mouseY - HALF;
+    const dx = tx - x;
+    const dy = ty - y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
 
-  function dash() {
-    clearTimeout(idleTimer);
-    spiderEl.classList.remove('idle');
-    pickTarget();
-    running = true;
-  }
-
-  function tick() {
-    requestAnimationFrame(tick);
-    if (!running) return;
-
-    const dx = targetX - x;
-    const dy = targetY - y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const speed = 10;
-
-    // SVG spider faces up (-y), so add 90° to align with travel direction.
     const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-
-    // Smoothly interpolate current angle toward target angle
     let delta = targetAngle - angle;
-    // Wrap delta to [-180, 180] for shortest-path rotation
-    if (delta > 180)  delta -= 360;
+    if (delta >  180) delta -= 360;
     if (delta < -180) delta += 360;
-    const newAngle = angle + delta * 0.18;
+    const newAngle = angle + delta * 0.15;
 
-    if (dist < speed + 2) {
-      setTransform(targetX, targetY, newAngle);
-      idle();
+    if (dist < 4) {
+      setTransform(tx, ty, newAngle);
+      spiderEl.classList.add('idle');
       return;
     }
+    spiderEl.classList.remove('idle');
+    const speed = Math.min(SPIDER_SPEED, dist);
+    setTransform(x + (dx/dist)*speed, y + (dy/dist)*speed, newAngle);
 
-    setTransform(
-      x + (dx / dist) * speed,
-      y + (dy / dist) * speed,
-      newAngle
-    );
+    // Stomp fires the spider walks over
+    const { sx, sy } = spiderCenter();
+    fires = fires.filter(f => {
+      if (Math.hypot(f.x - sx, f.y - sy) < f.r + 30) {
+        extinguishSound();
+        addScore(5);
+        return false;
+      }
+      return true;
+    });
   }
 
-  function startMovement() {
-    // Enter from right edge, aim at center
-    x = W() + SIZE;
-    y = H() / 2 - SIZE / 2;
-    targetX = W() / 2 - SIZE / 2;
-    targetY = H() / 2 - SIZE / 2;
-    angle = 270; // facing left (180° travel + 90° SVG offset)
-    setTransform(x, y, angle);
-    running = true;
-    requestAnimationFrame(tick);
+  // ── Fires ────────────────────────────────────────────────────────
+  function spawnFire() {
+    if (isOver) return;
+    const { sx, sy } = spiderCenter();
+    let fx, fy, attempts = 0;
+    do {
+      fx = 80 + Math.random() * (window.innerWidth  - 160);
+      fy = 80 + Math.random() * (window.innerHeight - 160);
+      attempts++;
+    } while (Math.hypot(fx-sx, fy-sy) < 180 && attempts < 20);
+
+    fires.push({ x: fx, y: fy, r: FIRE_MIN_R, flicker: Math.random() * Math.PI * 2 });
+    updateHUD();
+
+    if (fires.length >= FIRE_MAX) endGame();
   }
+
+  function startSpawning() {
+    spawnFire();
+    spawnTimer = setInterval(spawnFire, FIRE_SPAWN_MS);
+  }
+
+  function drawFires(t) {
+    const spreads = [];
+    fires.forEach(f => {
+      f.r = Math.min(f.r + FIRE_GROW_RATE, FIRE_MAX_R);
+      f.flicker += 0.15;
+      const fl = f.r + Math.sin(f.flicker) * 4;
+
+      // Outer haze — no gradient, just globalAlpha layers
+      ctx.globalAlpha = 0.12;
+      ctx.fillStyle = '#ff2200';
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, fl * 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 0.35;
+      ctx.fillStyle = '#ff6600';
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, fl * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 0.65;
+      ctx.fillStyle = '#ffaa00';
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, fl * 0.9, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Hot core
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = '#ffff99';
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, fl * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 1;
+
+      // Spread indicator ring when near max
+      if (f.r > FIRE_MAX_R * 0.8) {
+        const alpha = ((f.r - FIRE_MAX_R * 0.8) / (FIRE_MAX_R * 0.2) * 0.5).toFixed(2);
+        ctx.globalAlpha = parseFloat(alpha);
+        ctx.strokeStyle = '#ff3300';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, FIRE_MAX_R * 2.5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      // Collect spreads — apply after forEach to avoid mutating during iteration
+      if (f.r >= FIRE_MAX_R && !isOver) {
+        f.r = FIRE_MIN_R;
+        const sx2 = Math.max(60, Math.min(window.innerWidth-60,  f.x + (Math.random()-0.5)*200));
+        const sy2 = Math.max(60, Math.min(window.innerHeight-60, f.y + (Math.random()-0.5)*200));
+        spreads.push({ x: sx2, y: sy2, r: FIRE_MIN_R, flicker: Math.random() * Math.PI * 2 });
+      }
+    });
+
+    ctx.globalAlpha = 1;
+
+    if (spreads.length && !isOver) {
+      fires.push(...spreads);
+      updateHUD();
+      if (fires.length >= FIRE_MAX) endGame();
+    }
+  }
+
+  // ── Matrix rain ─────────────────────────────────────────────────
+  const CHARS   = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOP';
+  const COL_W   = 22;
+  const HIT_R   = 58;
+  let matrixCols = [];
+  let hitParticles = [];
+
+  function makeCol(index, initial) {
+    return {
+      x:      index * COL_W + COL_W / 2,
+      headY:  initial ? Math.random() * window.innerHeight : -COL_W,
+      speed:  1.5 + Math.random() * 3.5,
+      len:    10 + Math.floor(Math.random() * 14),
+      chars:  Array.from({ length: 24 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]),
+      tick:   0
+    };
+  }
+
+  let rampTimer = null;
+
+  function initMatrix() {
+    if (rampTimer) { clearInterval(rampTimer); rampTimer = null; }
+    matrixCols = [];
+    const n = Math.ceil(window.innerWidth / COL_W);
+    for (let i = 0; i < n; i++) {
+      matrixCols.push(Math.random() < 0.04 ? makeCol(i, true) : null);
+    }
+    // Trickle in one column every 4 seconds
+    rampTimer = setInterval(() => {
+      if (isOver) { clearInterval(rampTimer); rampTimer = null; return; }
+      const empty = [];
+      for (let i = 0; i < matrixCols.length; i++) { if (!matrixCols[i]) empty.push(i); }
+      if (!empty.length) { clearInterval(rampTimer); rampTimer = null; return; }
+      const pick = empty[Math.floor(Math.random() * empty.length)];
+      matrixCols[pick] = makeCol(pick, false);
+    }, 4000);
+  }
+
+  function drawMatrix() {
+    if (isOver) return;
+    const { sx, sy } = spiderCenter();
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = 'transparent';
+    ctx.globalAlpha = 1;
+    ctx.font = `${COL_W - 2}px monospace`;
+
+    matrixCols.forEach((col, i) => {
+      if (!col) return;
+      col.headY += col.speed;
+      col.tick++;
+      if (col.tick % 4 === 0) {
+        const r = Math.floor(Math.random() * col.chars.length);
+        col.chars[r] = CHARS[Math.floor(Math.random() * CHARS.length)];
+      }
+      if (col.headY - col.len * COL_W > window.innerHeight) {
+        matrixCols[i] = makeCol(i, false);
+        return;
+      }
+
+      for (let j = 0; j < col.len; j++) {
+        const cy = col.headY - j * COL_W;
+        if (cy < 0 || cy > window.innerHeight) continue;
+        if (j === 0) {
+          ctx.fillStyle = '#ccffcc';
+        } else {
+          // Use globalAlpha instead of per-char rgba string allocation
+          ctx.globalAlpha = (1 - j / col.len) * 0.75;
+          ctx.fillStyle = '#00ff41';
+        }
+        ctx.fillText(col.chars[j], col.x - COL_W / 2, cy);
+      }
+      ctx.globalAlpha = 1;
+
+      // Collision: head character hits spider
+      if (!invincible && !isOver) {
+        const dist = Math.hypot(col.x - sx, col.headY - sy);
+        if (dist < HIT_R) hitSpider();
+      }
+    });
+  }
+
+  // ── Hit particle burst ──────────────────────────────────────────
+  function spawnMatrixExplosion(ex, ey) {
+    const count = Math.min(50, MAX_PARTICLES - hitParticles.length);
+    for (let i = 0; i < count; i++) {
+      const speed = 3 + Math.random() * 9;
+      const dir   = Math.random() * Math.PI * 2;
+      hitParticles.push({
+        x: ex, y: ey,
+        vx: Math.cos(dir) * speed,
+        vy: Math.sin(dir) * speed,
+        char: CHARS[Math.floor(Math.random() * CHARS.length)],
+        age: 0,
+        maxAge: 50 + Math.floor(Math.random() * 40),
+        boom: true
+      });
+    }
+  }
+
+  function spawnHitBurst(sx, sy) {
+    const count = Math.min(28, MAX_PARTICLES - hitParticles.length);
+    for (let i = 0; i < count; i++) {
+      const speed = 2 + Math.random() * 6;
+      const dir   = Math.random() * Math.PI * 2;
+      hitParticles.push({
+        x: sx, y: sy,
+        vx: Math.cos(dir) * speed,
+        vy: Math.sin(dir) * speed,
+        char: CHARS[Math.floor(Math.random() * CHARS.length)],
+        age: 0,
+        maxAge: 40 + Math.floor(Math.random() * 30)
+      });
+    }
+  }
+
+  function drawHitParticles() {
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = 'transparent';
+    // Filter expired (swap-remove to avoid array allocation)
+    let i = 0;
+    while (i < hitParticles.length) {
+      if (hitParticles[i].age >= hitParticles[i].maxAge) {
+        hitParticles[i] = hitParticles[hitParticles.length - 1];
+        hitParticles.length--;
+      } else { i++; }
+    }
+    // Draw as squares — no fillText / font rendering
+    for (let j = 0; j < hitParticles.length; j++) {
+      const p = hitParticles[j];
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.vx *= 0.92;
+      p.vy *= 0.92;
+      p.age++;
+      const alpha = 1 - p.age / p.maxAge;
+      if (p.boom && p.age < 12) {
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#ffffff';
+      } else {
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.fillStyle = '#00ff41';
+      }
+      ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Spider hit ──────────────────────────────────────────────────
+  function hitSpider() {
+    invincible = true;
+    lives--;
+    updateHUD();
+    hitSound();
+    const { sx, sy } = spiderCenter();
+    spawnHitBurst(sx, sy);
+
+    spiderEl.classList.remove('hit');
+    // Use setTimeout instead of offsetWidth to avoid forced reflow
+    setTimeout(() => spiderEl.classList.add('hit'), 16);
+
+    clearTimeout(invincTimer);
+    invincTimer = setTimeout(() => {
+      invincible = false;
+      spiderEl.classList.remove('hit');
+    }, 2000);
+
+    if (lives <= 0) endGame('DELETED');
+  }
+
+  // ── Lasers ──────────────────────────────────────────────────────
+  // ── Audio (Web Audio API) ───────────────────────────────────────
+  let audioCtx = null;
+  let crackleGain = null;
+  let cachedNoiseBuffer = null;
+
+  function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    // Build a 3-second looping crackle buffer
+    const rate = audioCtx.sampleRate;
+    const buf  = audioCtx.createBuffer(1, rate * 3, rate);
+    const data = buf.getChannelData(0);
+    let brown  = 0;
+    for (let i = 0; i < data.length; i++) {
+      brown = (brown + 0.02 * (Math.random() * 2 - 1)) * 0.98;
+      const crackle = Math.random() < 0.0008 ? (Math.random() * 2 - 1) * 0.9 : 0;
+      data[i] = brown * 3 + crackle;
+    }
+
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.loop   = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type            = 'lowpass';
+    filter.frequency.value = 900;
+
+    crackleGain = audioCtx.createGain();
+    crackleGain.gain.value = 0;
+
+    src.connect(filter);
+    filter.connect(crackleGain);
+    crackleGain.connect(audioCtx.destination);
+    src.start();
+  }
+
+  function updateCrackle() {
+    if (!crackleGain) return;
+    const target = fires.length > 0 ? Math.min(fires.length * 0.06, 0.35) : 0;
+    crackleGain.gain.setTargetAtTime(target, audioCtx.currentTime, 0.8);
+  }
+
+  function zapSound() {
+    if (!audioCtx) return;
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sawtooth';
+    const t = audioCtx.currentTime;
+    osc.frequency.setValueAtTime(880, t);
+    osc.frequency.exponentialRampToValueAtTime(80, t + 0.18);
+    gain.gain.setValueAtTime(0.25, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    osc.start(t);
+    osc.stop(t + 0.2);
+  }
+
+  function hitSound() {
+    if (!audioCtx) return;
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'square';
+    const t = audioCtx.currentTime;
+    osc.frequency.setValueAtTime(300, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.35);
+    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    osc.start(t);
+    osc.stop(t + 0.35);
+  }
+
+  function extinguishSound() {
+    if (!audioCtx) return;
+    // Build noise buffer once; reuse across all extinguish sounds
+    if (!cachedNoiseBuffer) {
+      const rate = audioCtx.sampleRate;
+      cachedNoiseBuffer = audioCtx.createBuffer(1, rate * 0.6, rate);
+      const data = cachedNoiseBuffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    }
+
+    const src    = audioCtx.createBufferSource();
+    src.buffer   = cachedNoiseBuffer;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type            = 'highpass';
+    filter.frequency.value = 2500;
+
+    const gain = audioCtx.createGain();
+    const t    = audioCtx.currentTime;
+    gain.gain.setValueAtTime(0.3, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    src.start(t);
+    src.stop(t + 0.6);
+  }
+
+  let flashPending = false;
+  function flashScore() {
+    if (flashPending) return;
+    flashPending = true;
+    const hud = document.getElementById('hud');
+    hud.classList.remove('score-pop');
+    requestAnimationFrame(() => {
+      hud.classList.add('score-pop');
+      flashPending = false;
+    });
+  }
+
+  function addScore(pts) {
+    score += pts;
+    flashScore();
+    updateHUD();
+  }
+
+  function shootLaser(tx, ty) {
+    if (isOver) return;
+    if (lasers.length >= MAX_LASERS) return;
+    initAudio();
+    zapSound();
+    const { sx, sy } = spiderCenter();
+
+    const rawDist = Math.hypot(tx - sx, ty - sy);
+    const nx = (tx - sx) / rawDist;
+    const ny = (ty - sy) / rawDist;
+    // Travel until it exits the screen
+    const maxDist = Math.hypot(window.innerWidth, window.innerHeight);
+    const pts = Math.max(5, Math.min(50, Math.round(rawDist / 10)));
+
+    lasers.push({ ox: sx, oy: sy, nx, ny, traveled: 0, maxDist, pts });
+  }
+
+  function lineHitsCircle(x1, y1, x2, y2, cx, cy, r) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const fx = x1 - cx, fy = y1 - cy;
+    const a = dx*dx + dy*dy;
+    const b = 2*(fx*dx + fy*dy);
+    const c = fx*fx + fy*fy - r*r;
+    let disc = b*b - 4*a*c;
+    if (disc < 0) return false;
+    disc = Math.sqrt(disc);
+    const t1 = (-b - disc) / (2*a);
+    const t2 = (-b + disc) / (2*a);
+    return (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1);
+  }
+
+  const BOLT_SPEED  = 18; // px per frame
+  const BOLT_LENGTH = 50; // visual trail length
+
+  function drawLasers() {
+    lasers = lasers.filter(l => l.traveled < l.maxDist);
+
+    // Collect dead fires across all bolts, filter once
+    const deadFires = new Set();
+
+    lasers.forEach(l => {
+      l.traveled = Math.min(l.traveled + BOLT_SPEED, l.maxDist);
+
+      const hx = l.ox + l.nx * l.traveled;
+      const hy = l.oy + l.ny * l.traveled;
+      const tailDist = Math.max(0, l.traveled - BOLT_LENGTH);
+      const tx = l.ox + l.nx * tailDist;
+      const ty = l.oy + l.ny * tailDist;
+
+      // Fire collision
+      fires.forEach(f => {
+        if (deadFires.has(f)) return;
+        if (Math.hypot(hx - f.x, hy - f.y) < f.r + 12) {
+          f.r -= LASER_DAMAGE;
+          if (f.r <= 0) {
+            extinguishSound();
+            addScore(l.pts);
+            deadFires.add(f);
+          }
+        }
+      });
+
+      // Matrix column collision — one per bolt lifetime
+      if (!l.hitCol) {
+        for (let i = 0; i < matrixCols.length; i++) {
+          const col = matrixCols[i];
+          if (!col) continue;
+          if (Math.hypot(hx - col.x, hy - col.headY) < COL_W) {
+            spawnMatrixExplosion(col.x, col.headY);
+            addScore(l.pts * 2);
+            matrixCols[i] = makeCol(i, false);
+            l.hitCol = true;
+            break;
+          }
+        }
+      }
+
+      // Draw bolt — no gradient/shadow to avoid GPU stall
+      ctx.save();
+      ctx.globalAlpha = 0.55;
+      ctx.strokeStyle = '#00ffcc';
+      ctx.lineWidth   = 3;
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(hx, hy);
+      ctx.stroke();
+
+      // Bright tip (last 20px)
+      const tipDist = Math.max(tailDist, l.traveled - 20);
+      const tipX = l.ox + l.nx * tipDist;
+      const tipY = l.oy + l.ny * tipDist;
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth   = 2;
+      ctx.beginPath();
+      ctx.moveTo(tipX, tipY);
+      ctx.lineTo(hx, hy);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    if (deadFires.size) fires = fires.filter(f => !deadFires.has(f));
+    if (deadFires.size) updateHUD();
+  }
+
+  // ── Click to shoot ───────────────────────────────────────────────
+  document.addEventListener('click', e => shootLaser(e.clientX, e.clientY));
+
+  // ── Game over ───────────────────────────────────────────────────
+  function endGame(reason = 'BURNED') {
+    isOver = true;
+    clearInterval(spawnTimer);
+    goTitle.textContent  = reason;
+    goScore.textContent  = `Final score: ${score}`;
+    gameOverEl.classList.add('show');
+  }
+
+  document.getElementById('restart-btn').addEventListener('click', () => {
+    fires        = [];
+    lasers       = [];
+    hitParticles = [];
+    score      = 0;
+    lives      = 3;
+    invincible = false;
+    isOver     = false;
+    spiderEl.classList.remove('hit');
+    gameOverEl.classList.remove('show');
+    initMatrix();
+    updateHUD();
+    startSpawning();
+  });
+
+  // ── Main loop ────────────────────────────────────────────────────
+  function loop(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMatrix();
+    drawHitParticles();
+    if (!isOver) tickSpider();
+    drawFires(t);
+    drawLasers();
+    updateCrackle();
+    requestAnimationFrame(loop);
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────
+  x = window.innerWidth / 2 - HALF;
+  y = window.innerHeight / 2 - HALF;
+  setTransform(x, y, 270);
+  initMatrix();
+  updateHUD();
+  startSpawning();
+  requestAnimationFrame(loop);
 
 })();
 </script>
-
 </body>
 </html>
