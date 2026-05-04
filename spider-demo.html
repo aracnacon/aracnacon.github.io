@@ -121,6 +121,61 @@
       background: #00ffcc22;
       box-shadow: 0 0 24px #00ffcc88;
     }
+
+    /* ── Start Screen ── */
+    #start-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.88);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, 'Courier New', monospace;
+      color: #00ffcc;
+      text-shadow: 0 0 12px #00ffcc;
+    }
+    #start-screen.show { display: flex; }
+    #start-screen h1 {
+      font-size: 3rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.4rem;
+      text-shadow: 0 0 24px #00ffcc;
+    }
+    #start-screen .subtitle {
+      font-size: 0.85rem;
+      opacity: 0.5;
+      letter-spacing: 0.25em;
+      margin-bottom: 2rem;
+    }
+    #start-screen ul {
+      list-style: none;
+      margin-bottom: 2.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+      opacity: 0.82;
+      text-align: left;
+    }
+    #start-screen ul li::before { content: '▸  '; color: #00ffcc; }
+    #start-screen button {
+      padding: 0.8rem 2.5rem;
+      background: transparent;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      font-family: inherit;
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-shadow: 0 0 8px #00ffcc;
+      box-shadow: 0 0 12px #00ffcc44;
+      transition: all 0.2s;
+    }
+    #start-screen button:hover {
+      background: #00ffcc22;
+      box-shadow: 0 0 24px #00ffcc88;
+    }
   </style>
 </head>
 <body>
@@ -133,6 +188,20 @@
   <span>Fires: <b id="hud-fires">0</b></span>
   <span>Heat: <b id="hud-heat">0%</b></span>
   <span>Lives: <b id="hud-lives">◆◆◆</b></span>
+</div>
+
+<div id="start-screen" class="show">
+  <h1>SPIDER FIRE FIGHTER</h1>
+  <p class="subtitle">SURVIVAL PROTOCOL</p>
+  <ul>
+    <li>Move your mouse to guide the spider</li>
+    <li>Click anywhere to shoot a laser bolt</li>
+    <li>Walk over fires to stomp them out</li>
+    <li>Dodge the falling Matrix code rain</li>
+    <li>Game over if 8 fires burn at once</li>
+    <li>You have 3 lives — make them count</li>
+  </ul>
+  <button id="start-btn">START MISSION</button>
 </div>
 
 <div id="game-over">
@@ -161,8 +230,9 @@
 
   // ── State ───────────────────────────────────────────────────────
   let fires = [], lasers = [];
-  let score = 0, isOver = false;
+  let score = 0, isOver = false, gameStarted = false;
   let lives = 3, invincible = false, invincTimer = null;
+  let audioOffTimer = null;
   let spawnTimer = null;
   let x = 0, y = 0, angle = 270;
   let mouseX = window.innerWidth / 2;
@@ -836,7 +906,7 @@
   }
 
   // ── Click to shoot ───────────────────────────────────────────────
-  document.addEventListener('click', e => shootLaser(e.clientX, e.clientY));
+  document.addEventListener('click', e => { if (gameStarted) shootLaser(e.clientX, e.clientY); });
 
   // ── Game over ───────────────────────────────────────────────────
   function endGame(reason = 'BURNED') {
@@ -845,7 +915,23 @@
     goTitle.textContent  = reason;
     goScore.textContent  = `Final score: ${score}`;
     gameOverEl.classList.add('show');
+    // Fade out all audio 7 seconds after game over
+    audioOffTimer = setTimeout(() => {
+      if (crackleGain && audioCtx) {
+        crackleGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.5);
+      }
+      if (audioCtx && audioCtx.state === 'running') {
+        audioCtx.suspend();
+      }
+    }, 7000);
   }
+
+  document.getElementById('start-btn').addEventListener('click', () => {
+    document.getElementById('start-screen').classList.remove('show');
+    gameStarted = true;
+    initAudio();
+    startSpawning();
+  });
 
   document.getElementById('restart-btn').addEventListener('click', () => {
     fires        = [];
@@ -855,8 +941,13 @@
     lives      = 3;
     invincible = false;
     isOver     = false;
+    gameStarted = true;
     spiderEl.classList.remove('hit');
     gameOverEl.classList.remove('show');
+    // Cancel pending audio shutoff and resume if needed
+    clearTimeout(audioOffTimer);
+    audioOffTimer = null;
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     initMatrix();
     updateHUD();
     startSpawning();
@@ -880,7 +971,7 @@
   setTransform(x, y, 270);
   initMatrix();
   updateHUD();
-  startSpawning();
+  // startSpawning() is called when the player clicks START MISSION
   requestAnimationFrame(loop);
 
 })();
