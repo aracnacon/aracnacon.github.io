@@ -16,7 +16,7 @@ A personal portfolio website hosted on GitHub Pages at [aracnacon.github.io](htt
 
 ## Features
 
-- **Animated Splash Screen** - Full-screen SVG spider logo with independently pivoting arms/tools and tool cutouts (screen, gear hole, briefcase clasp); dissolves on mouse move
+- **Animated Splash Screen** - Full-screen SVG spider logo with independently pivoting arms/tools and tool cutouts (screen, gear hole, briefcase clasp); electric circuit animation races around the inner body and powers up the outer body like a light bulb (loops until mouse move dissolves the screen)
 - **Theme Switcher** - Multiple visual themes with custom backgrounds, fonts, icon sets, and profile image borders
 - **Typewriter Effect** - Animated subtitle text on each page
 - **Scroll Animations** - GSAP-powered reveal animations on scroll

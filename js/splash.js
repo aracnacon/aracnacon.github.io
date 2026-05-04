@@ -122,6 +122,93 @@
         });
         svgEl.appendChild(group);
       });
+
+      // ── Electric inner-body circuit animation ────────────────────
+      const innerBody = svgEl.getElementById('path17');
+      if (innerBody) {
+        innerBody.style.fill = '#0d0d0d';
+
+        // Dim base glow outlining the circuit path
+        const circuitGlow = innerBody.cloneNode(true);
+        circuitGlow.removeAttribute('id');
+        circuitGlow.style.cssText = 'fill:none;stroke:#00ffcc;stroke-width:3';
+        circuitGlow.classList.add('circuit-glow');
+        svgEl.appendChild(circuitGlow);
+
+        // The traveling spark
+        const spark = innerBody.cloneNode(true);
+        spark.removeAttribute('id');
+        spark.style.cssText = 'fill:none;stroke:#e0ffff;stroke-width:2';
+        spark.classList.add('electric-spark');
+        svgEl.appendChild(spark);
+
+        // Mark outer body paths for the bulb-on effect
+        const outerIds = ['path13','path14','path15','path16'];
+
+        // Wait for render so getTotalLength() is available
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          const len = spark.getTotalLength();
+          const pulse = len * 0.07;
+          const cycleDuration = 1600; // ms per loop
+
+          const st = document.createElement('style');
+          st.textContent = `
+            .circuit-glow {
+              animation: circuit-breathe 2s ease-in-out infinite alternate;
+              filter: drop-shadow(0 0 2px #00ffcc);
+            }
+            @keyframes circuit-breathe {
+              from { opacity: 0.08; }
+              to   { opacity: 0.3; }
+            }
+            .electric-spark {
+              stroke-dasharray: ${pulse.toFixed(1)} ${(len - pulse).toFixed(1)};
+              stroke-dashoffset: ${len.toFixed(1)};
+              animation: spark-travel ${cycleDuration}ms linear infinite;
+              filter: drop-shadow(0 0 2px #00ffcc) drop-shadow(0 0 5px #fff);
+            }
+            @keyframes spark-travel {
+              to { stroke-dashoffset: 0; }
+            }
+            .outer-bulb.bulb-on {
+              animation: bulb-settle 1.5s ease-out forwards;
+            }
+            @keyframes bulb-settle {
+              0%   { fill: #808080; filter: none; }
+              5%   { fill: #ffffff; filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px #ffe57a); }
+              30%  { fill: #fffde7; filter: drop-shadow(0 0 15px #ffe57a) drop-shadow(0 0 30px #ffe57a); }
+              100% { fill: #fff8e1; filter: drop-shadow(0 0 4px #ffe57a) drop-shadow(0 0 10px #ffe57a); }
+            }
+          `;
+          document.head.appendChild(st);
+
+          // Mark outer body paths now so they're ready
+          outerIds.forEach(id => {
+            const el = svgEl.getElementById(id);
+            if (el) el.classList.add('outer-bulb');
+          });
+
+          // Loop: spark x2 → bulb on → reset → repeat
+          const bulbDuration = 1500;
+          const pauseBetween = 400;
+          function fireSequence() {
+            setTimeout(() => {
+              outerIds.forEach(id => {
+                const el = svgEl.getElementById(id);
+                if (el) el.classList.add('bulb-on');
+              });
+              setTimeout(() => {
+                outerIds.forEach(id => {
+                  const el = svgEl.getElementById(id);
+                  if (el) el.classList.remove('bulb-on');
+                });
+                setTimeout(fireSequence, pauseBetween);
+              }, bulbDuration);
+            }, cycleDuration * 2);
+          }
+          fireSequence();
+        }));
+      }
     });
 
   let gone = false;
