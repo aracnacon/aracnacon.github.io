@@ -18,12 +18,22 @@
       filter: blur(16px);
       pointer-events: none;
     }
-    #splash-screen img {
+    #splash-spider-wrap {
       width: 14rem;
       height: 14rem;
-      border-radius: 0;
-      border: none;
-      box-shadow: none;
+    }
+    #splash-spider-wrap svg {
+      width: 100%;
+      height: 100%;
+    }
+    #phone-arm-group {
+      transform-box: fill-box;
+      transform-origin: 0% 100%;
+      animation: phone-arm-pivot 2s ease-in-out infinite alternate;
+    }
+    @keyframes phone-arm-pivot {
+      from { transform: rotate(-18deg); }
+      to   { transform: rotate(18deg); }
     }
     #splash-screen .splash-title {
       margin-top: 2rem;
@@ -49,11 +59,28 @@
   const splash = document.createElement('div');
   splash.id = 'splash-screen';
   splash.innerHTML = `
-    <img src="images/spider-bw.png" alt="AracnaTech" />
+    <div id="splash-spider-wrap"></div>
     <span class="splash-title">AracnaTech</span>
     <span class="splash-subtitle">Brandon Hixson</span>
   `;
   document.body.prepend(splash);
+
+  // Inline the SVG so we can animate internal elements
+  fetch('images/spiderTrace.svg')
+    .then(r => r.text())
+    .then(svg => {
+      const wrap = document.getElementById('splash-spider-wrap');
+      wrap.innerHTML = svg;
+      const svgEl = wrap.querySelector('svg');
+      // Group the phone arm segments so they move as one unit
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.id = 'phone-arm-group';
+      ['path21', 'path22', 'path23'].forEach(id => {
+        const el = svgEl.getElementById(id);
+        if (el) group.appendChild(el);
+      });
+      svgEl.appendChild(group);
+    });
 
   let gone = false;
   function dissolve() {
