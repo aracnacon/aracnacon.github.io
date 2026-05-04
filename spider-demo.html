@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spider Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #080808;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #spider {
+      position: fixed;
+      width: 220px;
+      height: 220px;
+      will-change: transform;
+    }
+
+    #spider svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* ── Limb walk cycle ─────────────────────────────────────── */
+    .limb { transform-box: fill-box; }
+
+    /* Right upper → pivot from bottom-left */
+    #lw-phone,
+    #lw-plug   { transform-origin: 0% 100%; }
+
+    /* Right lower → pivot from top-left */
+    #lw-gear,
+    #lw-brief  { transform-origin: 0% 0%; }
+
+    /* Left upper → pivot from bottom-right */
+    #lw-wrench1,
+    #lw-wrench2 { transform-origin: 100% 100%; }
+
+    /* Left lower → pivot from top-right */
+    #lw-magglass,
+    #lw-hammer  { transform-origin: 100% 0%; }
+
+    /* Pair A — phase 0 */
+    #lw-phone, #lw-gear, #lw-wrench1, #lw-magglass {
+      animation: walk-a 0.14s linear infinite;
+    }
+    /* Pair B — phase 180° (starts reversed) */
+    #lw-plug, #lw-brief, #lw-wrench2, #lw-hammer {
+      animation: walk-b 0.14s linear infinite;
+    }
+
+    @keyframes walk-a {
+      0%   { transform: rotate(-8deg); }
+      50%  { transform: rotate( 8deg); }
+      100% { transform: rotate(-8deg); }
+    }
+    @keyframes walk-b {
+      0%   { transform: rotate( 8deg); }
+      50%  { transform: rotate(-8deg); }
+      100% { transform: rotate( 8deg); }
+    }
+
+    /* Idle — freeze legs */
+    #spider.idle .limb { animation-play-state: paused; }
+
+    /* rotation handled via JS transform, no CSS flip needed */
+  </style>
+</head>
+<body>
+
+<div id="spider"></div>
+
+<script>
+(function () {
+  const TOOL_IDS  = ['path2','path3','path4',          // bg trace
+                     'path26',                          // Plug
+                     'path22','path23','rect54',        // Phone + screen
+                     'path42','ellipse49',              // Gear
+                     'path45','path49',                 // BriefCase
+                     'rect51','rect52','rect53',        // BriefCase details
+                     'path29','path51',                 // MagGlass
+                     'path32','path33',                 // Hammer head+handle
+                     'path36',                         // Wrench1
+                     'path39'];                        // Wrench2
+
+  // Segment path IDs grouped per limb  [groupId, [pathIds]]
+  const LIMBS = [
+    ['lw-phone',    ['path20','path21']],
+    ['lw-plug',     ['path24','path25']],
+    ['lw-gear',     ['path40','path41']],
+    ['lw-brief',    ['path43','path44']],
+    ['lw-magglass', ['path27','path28']],
+    ['lw-hammer',   ['path30','path31']],
+    ['lw-wrench1',  ['path34','path35']],
+    ['lw-wrench2',  ['path37','path38']],
+  ];
+
+  const BODY_IDS = ['path13','path14','path15','path16','path17'];
+
+  const spiderEl = document.getElementById('spider');
+
+  fetch('images/spiderTrace.svg')
+    .then(r => r.text())
+    .then(raw => {
+      spiderEl.innerHTML = raw;
+      const svg = spiderEl.querySelector('svg');
+
+      // Crop viewBox to spider extent
+      svg.setAttribute('viewBox', '80 140 860 730');
+
+      // Hide tools and background
+      TOOL_IDS.forEach(id => {
+        const el = svg.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+
+      // Wrap each limb pair in an animated group
+      LIMBS.forEach(([groupId, pathIds]) => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.id = groupId;
+        g.classList.add('limb');
+        pathIds.forEach(id => {
+          const el = svg.getElementById(id);
+          if (el) g.appendChild(el);
+        });
+        svg.appendChild(g);
+      });
+
+      // ── Electric inner-body circuit animation ──────────────────
+      const innerBody = svg.getElementById('path17');
+      const outerIds  = ['path13','path14','path15','path16'];
+
+      if (innerBody) {
+        innerBody.style.fill = '#0d0d0d';
+
+        // Dim base glow
+        const circuitGlow = innerBody.cloneNode(true);
+        circuitGlow.removeAttribute('id');
+        circuitGlow.style.cssText = 'fill:none;stroke:#00ffcc;stroke-width:3';
+        circuitGlow.classList.add('circuit-glow');
+        svg.appendChild(circuitGlow);
+
+        // Traveling spark
+        const spark = innerBody.cloneNode(true);
+        spark.removeAttribute('id');
+        spark.style.cssText = 'fill:none;stroke:#e0ffff;stroke-width:2';
+        spark.classList.add('electric-spark');
+        svg.appendChild(spark);
+
+        // Mark outer body for bulb effect
+        outerIds.forEach(id => {
+          const el = svg.getElementById(id);
+          if (el) el.classList.add('outer-bulb');
+        });
+
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          const len  = spark.getTotalLength();
+          const pulse = len * 0.07;
+          const cycleDuration = 1600;
+          const bulbDuration  = 1500;
+          const pauseBetween  = 400;
+
+          const st = document.createElement('style');
+          st.textContent = `
+            .circuit-glow {
+              animation: circuit-breathe 2s ease-in-out infinite alternate;
+              filter: drop-shadow(0 0 2px #00ffcc);
+            }
+            @keyframes circuit-breathe {
+              from { opacity: 0.08; }
+              to   { opacity: 0.3; }
+            }
+            .electric-spark {
+              stroke-dasharray: ${pulse.toFixed(1)} ${(len - pulse).toFixed(1)};
+              stroke-dashoffset: ${len.toFixed(1)};
+              animation: spark-travel ${cycleDuration}ms linear infinite;
+              filter: drop-shadow(0 0 2px #00ffcc) drop-shadow(0 0 5px #fff);
+            }
+            @keyframes spark-travel {
+              to { stroke-dashoffset: 0; }
+            }
+            .outer-bulb.bulb-on {
+              animation: bulb-settle 1.5s ease-out forwards;
+            }
+            @keyframes bulb-settle {
+              0%   { fill: #808080; filter: none; }
+              5%   { fill: #ffffff; filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px #ffe57a); }
+              30%  { fill: #fffde7; filter: drop-shadow(0 0 15px #ffe57a) drop-shadow(0 0 30px #ffe57a); }
+              100% { fill: #fff8e1; filter: drop-shadow(0 0 4px #ffe57a) drop-shadow(0 0 10px #ffe57a); }
+            }
+          `;
+          document.head.appendChild(st);
+
+          function fireSequence() {
+            setTimeout(() => {
+              outerIds.forEach(id => {
+                const el = svg.getElementById(id);
+                if (el) el.classList.add('bulb-on');
+              });
+              setTimeout(() => {
+                outerIds.forEach(id => {
+                  const el = svg.getElementById(id);
+                  if (el) el.classList.remove('bulb-on');
+                });
+                setTimeout(fireSequence, pauseBetween);
+              }, bulbDuration);
+            }, cycleDuration * 2);
+          }
+          fireSequence();
+        }));
+      }
+
+      // Kick off movement
+      startMovement();
+    });
+
+  // ── Movement ────────────────────────────────────────────────
+
+  const SIZE = 220;
+  let x, y, targetX, targetY, angle = 0, running = false;
+  let idleTimer = null;
+
+  function W() { return window.innerWidth; }
+  function H() { return window.innerHeight; }
+
+  function setTransform(nx, ny, deg) {
+    x = nx; y = ny; angle = deg;
+    spiderEl.style.transform =
+      `translate(${x}px, ${y}px) rotate(${deg}deg)`;
+  }
+
+  function pickTarget() {
+    const pad = SIZE;
+    targetX = pad + Math.random() * (W() - SIZE - pad * 2);
+    targetY = pad + Math.random() * (H() - SIZE - pad * 2);
+  }
+
+  function idle() {
+    spiderEl.classList.add('idle');
+    running = false;
+    idleTimer = setTimeout(dash, 400 + Math.random() * 1800);
+  }
+
+  function dash() {
+    clearTimeout(idleTimer);
+    spiderEl.classList.remove('idle');
+    pickTarget();
+    running = true;
+  }
+
+  function tick() {
+    requestAnimationFrame(tick);
+    if (!running) return;
+
+    const dx = targetX - x;
+    const dy = targetY - y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const speed = 10;
+
+    // SVG spider faces up (-y), so add 90° to align with travel direction.
+    const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+    // Smoothly interpolate current angle toward target angle
+    let delta = targetAngle - angle;
+    // Wrap delta to [-180, 180] for shortest-path rotation
+    if (delta > 180)  delta -= 360;
+    if (delta < -180) delta += 360;
+    const newAngle = angle + delta * 0.18;
+
+    if (dist < speed + 2) {
+      setTransform(targetX, targetY, newAngle);
+      idle();
+      return;
+    }
+
+    setTransform(
+      x + (dx / dist) * speed,
+      y + (dy / dist) * speed,
+      newAngle
+    );
+  }
+
+  function startMovement() {
+    // Enter from right edge, aim at center
+    x = W() + SIZE;
+    y = H() / 2 - SIZE / 2;
+    targetX = W() / 2 - SIZE / 2;
+    targetY = H() / 2 - SIZE / 2;
+    angle = 270; // facing left (180° travel + 90° SVG offset)
+    setTransform(x, y, angle);
+    running = true;
+    requestAnimationFrame(tick);
+  }
+
+})();
+</script>
+
+</body>
+</html>
