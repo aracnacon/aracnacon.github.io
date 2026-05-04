@@ -26,15 +26,31 @@
       width: 100%;
       height: 100%;
     }
-    #phone-arm-group {
+
+    /* ── Arm animations ─────────────────────────────────────────── */
+    .arm-group {
       transform-box: fill-box;
-      transform-origin: 0% 100%;
-      animation: phone-arm-pivot 2s ease-in-out infinite alternate;
     }
-    @keyframes phone-arm-pivot {
-      from { transform: rotate(-18deg); }
-      to   { transform: rotate(18deg); }
+
+    #phone-arm-group   { transform-origin: 0%    100%; animation: pivot-r  2.0s  0.0s  ease-in-out infinite alternate; }
+    #plug-arm-group    { transform-origin: 0%    100%; animation: pivot-r  2.5s  0.4s  ease-in-out infinite alternate; }
+    #wrench1-arm-group { transform-origin: 100%  100%; animation: pivot-l  3.2s  0.2s  ease-in-out infinite alternate; }
+    #wrench2-arm-group { transform-origin: 100%  100%; animation: pivot-l  2.7s  1.0s  ease-in-out infinite alternate; }
+    #hammer-arm-group  { transform-origin: 100%  0%;   animation: pivot-l  2.2s  0.6s  ease-in-out infinite alternate; }
+    #magglass-arm-group{ transform-origin: 100%  0%;   animation: pivot-l  2.4s  0.5s  ease-in-out infinite alternate; }
+    #gear-leg-group    { transform-origin: 0%    0%;   animation: pivot-r  3.0s  0.8s  ease-in-out infinite alternate; }
+    #brief-leg-group   { transform-origin: 0%    0%;   animation: pivot-r  2.8s  1.2s  ease-in-out infinite alternate; }
+
+    @keyframes pivot-r {
+      from { transform: rotate(-15deg); }
+      to   { transform: rotate(15deg); }
     }
+    @keyframes pivot-l {
+      from { transform: rotate(15deg); }
+      to   { transform: rotate(-15deg); }
+    }
+
+    /* ── Text ───────────────────────────────────────────────────── */
     #splash-screen .splash-title {
       margin-top: 2rem;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -65,21 +81,41 @@
   `;
   document.body.prepend(splash);
 
-  // Inline the SVG so we can animate internal elements
+  // Each entry: [groupId, [path ids to move], cssClass]
+  const armDefs = [
+    ['phone-arm-group',    ['path21','path22','path23']],
+    ['plug-arm-group',     ['path25','path26']],
+    ['wrench1-arm-group',  ['path35','path36']],
+    ['wrench2-arm-group',  ['path38','path39']],
+    ['hammer-arm-group',   ['path31','path32','path33']],
+    ['magglass-arm-group', ['path27','path28','path29','path51']],
+    ['gear-leg-group',     ['path41','path42','path49']],
+    ['brief-leg-group',    ['path44','path45']],
+  ];
+
   fetch('images/spiderTrace.svg')
     .then(r => r.text())
     .then(svg => {
       const wrap = document.getElementById('splash-spider-wrap');
       wrap.innerHTML = svg;
       const svgEl = wrap.querySelector('svg');
-      // Group the phone arm segments so they move as one unit
-      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      group.id = 'phone-arm-group';
-      ['path21', 'path22', 'path23'].forEach(id => {
+
+      // Fill cutout shapes with black to match splash background
+      ['path22','path26','path42','path45'].forEach(id => {
         const el = svgEl.getElementById(id);
-        if (el) group.appendChild(el);
+        if (el) { el.style.fill = '#000000'; el.style.stroke = 'none'; }
       });
-      svgEl.appendChild(group);
+
+      armDefs.forEach(([groupId, pathIds]) => {
+        const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        group.id = groupId;
+        group.classList.add('arm-group');
+        pathIds.forEach(id => {
+          const el = svgEl.getElementById(id);
+          if (el) group.appendChild(el);
+        });
+        svgEl.appendChild(group);
+      });
     });
 
   let gone = false;
