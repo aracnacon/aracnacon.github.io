@@ -1,4 +1,12 @@
 (function () {
+  const TIMEOUT_MS = 2 * 60 * 1000;
+  const now        = Date.now();
+  const lastVisit  = parseInt(sessionStorage.getItem('splash_last') || '0');
+  sessionStorage.setItem('splash_last', now);
+
+  // Skip splash if visited within the last 30 seconds
+  if (lastVisit && (now - lastVisit) < TIMEOUT_MS) return;
+
   const style = document.createElement('style');
   style.textContent = `
     #splash-screen {
