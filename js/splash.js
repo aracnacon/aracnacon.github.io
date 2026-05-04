@@ -11,22 +11,24 @@
       align-items: center;
       justify-content: center;
       cursor: none;
-      transition: opacity 1.4s ease-out, filter 1.4s ease-out;
+      transition: all 1400ms ease-out;
     }
     #splash-screen.dissolve {
       opacity: 0;
-      filter: blur(12px);
+      filter: blur(16px);
       pointer-events: none;
     }
     #splash-screen img {
-      width: 224px;
-      height: 224px;
-      animation: splash-dangle 5s ease-in-out infinite;
+      width: 14rem;
+      height: 14rem;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
     }
     #splash-screen .splash-title {
       margin-top: 2rem;
-      font-family: 'Courier New', monospace;
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 2.5rem;
       font-weight: 300;
       letter-spacing: 0.35em;
       text-transform: uppercase;
@@ -34,17 +36,12 @@
     }
     #splash-screen .splash-subtitle {
       margin-top: 0.75rem;
-      font-family: 'Courier New', monospace;
-      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 1.5rem;
       font-weight: 700;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.2);
-    }
-    @keyframes splash-dangle {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      25%       { transform: translateY(6px) rotate(0.5deg); }
-      75%       { transform: translateY(-4px) rotate(-0.5deg); }
     }
   `;
   document.head.appendChild(style);
@@ -66,8 +63,5 @@
     setTimeout(() => splash.remove(), 1400);
   }
 
-  document.addEventListener('mousemove', dissolve);
-  document.addEventListener('mousedown', dissolve);
-  document.addEventListener('keydown', dissolve);
-  document.addEventListener('touchstart', dissolve);
+  splash.addEventListener('mousemove', dissolve);
 })();
