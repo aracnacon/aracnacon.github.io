@@ -1408,9 +1408,11 @@
       }
 
       function syncModalContent() {
-        const srcId = modalType === 'trace' ? 'cs-trace-area' : 'cs-log-area';
-        const body  = document.getElementById('cs-modal-body');
-        body.innerHTML = document.getElementById(srcId).innerHTML;
+        const srcId  = modalType === 'trace' ? 'cs-trace-area' : 'cs-log-area';
+        const body   = document.getElementById('cs-modal-body');
+        const newHTML = document.getElementById(srcId).innerHTML;
+        if (body.innerHTML === newHTML) return;
+        body.innerHTML = newHTML;
         if (modalType === 'logs') body.scrollTop = body.scrollHeight;
       }
 
