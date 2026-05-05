@@ -336,6 +336,234 @@
         color: var(--color-secondary);
         font-style: italic;
       }
+
+      /* ── Checkout Simulation ───────────────────────────────────── */
+      #checkout-sim { margin-top: 2rem; }
+      .cs-layout {
+        display: grid;
+        grid-template-columns: 270px 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+      @media (max-width: 720px) { .cs-layout { grid-template-columns: 1fr; } }
+
+      /* Store panel */
+      .cs-store {
+        background: var(--bg-surface-solid);
+        border: 1px solid rgba(var(--color-primary-rgb), 0.25);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .cs-store-hdr {
+        padding: 9px 13px;
+        background: rgba(var(--color-primary-rgb), 0.08);
+        border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.18);
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: var(--color-text);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .cs-products { padding: 10px; display: flex; flex-direction: column; gap: 7px; }
+      .cs-product {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 7px 9px;
+        border: 1px solid rgba(var(--color-primary-rgb), 0.14);
+        border-radius: calc(var(--border-radius) - 2px);
+        background: rgba(var(--color-primary-rgb), 0.04);
+      }
+      .cs-prod-icon { font-size: 1.1em; color: var(--color-primary); width: 20px; text-align: center; flex-shrink: 0; }
+      .cs-prod-info { flex: 1; min-width: 0; }
+      .cs-prod-name { font-size: 0.76rem; font-weight: 600; color: var(--color-text); }
+      .cs-prod-price { font-size: 0.7rem; color: var(--color-secondary); }
+      .cs-add-btn {
+        background: rgba(var(--color-primary-rgb), 0.1);
+        border: 1px solid rgba(var(--color-primary-rgb), 0.28);
+        border-radius: 5px;
+        width: 24px; height: 24px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: var(--color-primary); flex-shrink: 0;
+        transition: background 0.15s;
+        font-size: 0.75rem;
+      }
+      .cs-add-btn:hover:not(:disabled) { background: rgba(var(--color-primary-rgb), 0.22); }
+      .cs-add-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+      .cs-cart {
+        border-top: 1px solid rgba(var(--color-primary-rgb), 0.14);
+        padding: 9px 10px;
+        min-height: 54px;
+        font-size: 0.76rem;
+      }
+      .cs-cart-empty { color: var(--color-secondary); text-align: center; padding: 8px 0; font-style: italic; }
+      .cs-cart-items { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+      .cs-cart-item { display: flex; align-items: center; gap: 5px; }
+      .cs-ci-name { flex: 1; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .cs-ci-price { color: var(--color-secondary); flex-shrink: 0; }
+      .cs-rm-btn { background: none; border: none; cursor: pointer; color: var(--color-secondary); font-size: 0.72em; padding: 1px 3px; flex-shrink: 0; }
+      .cs-rm-btn:hover { color: #e74c3c; }
+      .cs-cart-total { font-size: 0.78rem; color: var(--color-secondary); text-align: right; }
+      .cs-cart-total strong { color: var(--color-text); }
+
+      .cs-controls {
+        border-top: 1px solid rgba(var(--color-primary-rgb), 0.14);
+        padding: 10px;
+        display: flex; flex-direction: column; gap: 8px;
+      }
+      .cs-checkout-btn {
+        width: 100%; padding: 8px 12px;
+        background: rgba(var(--color-primary-rgb), 0.1);
+        border: 1px solid rgba(var(--color-primary-rgb), 0.38);
+        border-radius: var(--border-radius);
+        color: var(--color-primary);
+        font-weight: 700; font-size: 0.83rem;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        transition: background 0.15s, border-color 0.2s, color 0.2s;
+      }
+      .cs-checkout-btn:not(:disabled):hover { background: rgba(var(--color-primary-rgb), 0.2); }
+      .cs-checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+      .cs-err-label {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 0.7rem; color: var(--color-secondary); cursor: pointer;
+      }
+      .cs-err-label input { cursor: pointer; accent-color: #e74c3c; }
+      .cs-watch-btn {
+        width: 100%; padding: 7px 12px;
+        background: none;
+        border: 1px dashed rgba(var(--color-primary-rgb), 0.35);
+        border-radius: var(--border-radius);
+        color: var(--color-secondary);
+        font-size: 0.8rem; font-weight: 600;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        transition: border-color 0.15s, color 0.15s, border-style 0.15s;
+      }
+      .cs-watch-btn:hover { border-color: rgba(var(--color-primary-rgb),0.6); color: var(--color-text); }
+      .cs-watch-btn.cs-demo-on { border-style: solid; border-color: #e74c3c; color: #e74c3c; }
+
+      /* Autonomous cursor */
+      .cs-cursor {
+        position: fixed; top: 0; left: 0;
+        pointer-events: none; z-index: 99999;
+        opacity: 0;
+        transition: opacity 0.25s, transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+        will-change: transform;
+      }
+      .cs-cursor svg { display: block; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5)); }
+      .cs-cursor-ring {
+        position: absolute; top: 4px; left: 3px;
+        width: 18px; height: 18px; border-radius: 50%;
+        background: rgba(var(--color-primary-rgb), 0.35);
+        transform: scale(0); opacity: 0;
+        pointer-events: none;
+      }
+      .cs-cursor-ring.cs-ring-pop {
+        animation: cs-ring-pop 0.38s ease-out forwards;
+      }
+      @keyframes cs-ring-pop {
+        0%   { transform: scale(0);   opacity: 0.8; }
+        100% { transform: scale(2.8); opacity: 0; }
+      }
+
+      /* Telemetry column */
+      .cs-telemetry { display: flex; flex-direction: column; gap: 11px; min-width: 0; }
+      .cs-metrics-row {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      }
+      @media (max-width: 500px) { .cs-metrics-row { grid-template-columns: repeat(2,1fr); } }
+      .cs-metric {
+        background: var(--bg-surface-solid);
+        border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+        border-radius: var(--border-radius);
+        padding: 9px 6px; text-align: center;
+      }
+      .cs-metric-val {
+        font-size: 1.3rem; font-weight: 700; color: var(--color-text);
+        line-height: 1; margin-bottom: 3px;
+        font-family: 'Orbitron', monospace;
+        transition: color 0.3s;
+      }
+      .cs-metric-lbl { font-size: 0.6rem; color: var(--color-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+
+      .cs-panel {
+        background: var(--bg-surface-solid);
+        border: 1px solid rgba(var(--color-primary-rgb), 0.22);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+      }
+      .cs-panel-hdr {
+        padding: 5px 11px;
+        background: rgba(var(--color-primary-rgb), 0.07);
+        border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.14);
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 0.63rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        color: var(--color-secondary);
+      }
+      .cs-status-idle    { color: var(--color-secondary); }
+      .cs-status-running { color: #f39c12; }
+      .cs-status-ok      { color: #2ecc71; }
+      .cs-status-error   { color: #e74c3c; }
+      .cs-clear-btn {
+        background: none; border: none; cursor: pointer;
+        color: var(--color-secondary); font-size: 0.68rem;
+        padding: 1px 5px; border-radius: 3px;
+        text-transform: none; letter-spacing: 0;
+      }
+      .cs-clear-btn:hover { background: rgba(var(--color-primary-rgb),0.1); color: var(--color-text); }
+
+      /* Live trace area */
+      .cs-trace-area { min-height: 110px; max-height: 260px; overflow-y: auto; }
+      .cs-idle-msg { padding: 18px; text-align: center; color: var(--color-secondary); font-size: 0.78rem; opacity: 0.6; }
+
+      .cs-span-row {
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        min-height: 26px;
+        align-items: stretch;
+        border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.07);
+        animation: cs-fadein 0.25s ease;
+      }
+      .cs-span-row.cs-err-row { border-left: 2px solid #e74c3c; }
+      @keyframes cs-fadein { from { opacity:0; transform:translateY(-3px); } to { opacity:1; transform:none; } }
+      @keyframes cs-pulse  { from { opacity:0.45; } to { opacity:1; } }
+
+      .cs-sr-label {
+        display: flex; align-items: center; gap: 5px;
+        padding: 3px 6px;
+        border-right: 1px solid rgba(var(--color-primary-rgb), 0.1);
+        overflow: hidden;
+      }
+      .cs-sr-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+      .cs-sr-op  { font-size: 0.74rem; font-family: monospace; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex:1; min-width:0; }
+      .cs-sr-svc { font-size: 0.63rem; color: var(--color-secondary); white-space: nowrap; flex-shrink: 0; }
+
+      .cs-bar-col  { padding: 4px 8px 4px 3px; display: flex; align-items: center; }
+      .cs-bar-wrap { position: relative; flex: 1; height: 14px; background: rgba(var(--color-primary-rgb),0.06); border-radius: 3px; overflow: visible; }
+      .cs-bar {
+        position: absolute; top: 0; bottom: 0;
+        border-radius: 3px;
+        display: flex; align-items: center; padding: 0 3px;
+        min-width: 2px; overflow: hidden;
+      }
+      .cs-bar.cs-running { animation: cs-pulse 0.7s infinite alternate; }
+      .cs-bar-lbl { font-size: 0.6rem; color: #fff; font-weight: 600; white-space: nowrap; text-shadow: 0 0 3px rgba(0,0,0,0.5); }
+
+      /* Log stream */
+      .cs-log-area {
+        min-height: 90px; max-height: 160px; overflow-y: auto;
+        padding: 4px 0; font-family: monospace; font-size: 0.7rem;
+      }
+      .cs-log-line { padding: 1px 10px; line-height: 1.55; animation: cs-fadein 0.18s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .cs-log-ts  { color: var(--color-secondary); margin-right: 3px; }
+      .cs-log-svc { margin: 0 3px; }
+      .cs-log-msg { color: var(--color-text); }
     </style>
   </head>
   <body class="page-otel">
@@ -651,6 +879,66 @@
         </ul>
       </section>
 
+      <!-- Checkout Simulation -->
+      <section id="checkout-sim">
+        <h2><i class="fa-solid fa-bolt"></i> Watch Telemetry in Action</h2>
+        <p>Add items to the cart and hit <strong>Checkout</strong> to watch distributed traces, live metrics, and log streams react in real time. Toggle <em>Simulate stock error</em> to see how errors propagate through the pipeline.</p>
+
+        <div class="cs-layout">
+
+          <!-- Store -->
+          <div class="cs-store">
+            <div class="cs-store-hdr"><i class="fa-solid fa-store"></i> AracnaStore</div>
+            <div class="cs-products" id="cs-products"></div>
+            <div class="cs-cart" id="cs-cart"><div class="cs-cart-empty">Cart is empty</div></div>
+            <div class="cs-controls">
+              <button id="cs-watch-btn" class="cs-watch-btn">
+                <i class="fa-solid fa-circle-play"></i> Watch Demo
+              </button>
+              <button id="cs-checkout-btn" class="cs-checkout-btn" data-autodemo="checkout" disabled>
+                <i class="fa-solid fa-credit-card"></i> Checkout
+              </button>
+              <label class="cs-err-label">
+                <input type="checkbox" id="cs-error-mode">
+                Simulate stock error
+              </label>
+            </div>
+          </div>
+
+          <!-- Telemetry -->
+          <div class="cs-telemetry">
+
+            <div class="cs-metrics-row">
+              <div class="cs-metric"><div class="cs-metric-val" id="cs-m-req">0</div><div class="cs-metric-lbl">Requests</div></div>
+              <div class="cs-metric"><div class="cs-metric-val" id="cs-m-err">0</div><div class="cs-metric-lbl">Errors</div></div>
+              <div class="cs-metric"><div class="cs-metric-val" id="cs-m-lat">&mdash;</div><div class="cs-metric-lbl">Last Latency</div></div>
+              <div class="cs-metric"><div class="cs-metric-val" id="cs-m-rate">0%</div><div class="cs-metric-lbl">Error Rate</div></div>
+            </div>
+
+            <div class="cs-panel">
+              <div class="cs-panel-hdr">
+                <span>ACTIVE TRACE</span>
+                <span id="cs-trace-status" class="cs-status-idle">idle</span>
+              </div>
+              <div id="cs-trace-area" class="cs-trace-area">
+                <div class="cs-idle-msg">Waiting for request&hellip;</div>
+              </div>
+            </div>
+
+            <div class="cs-panel">
+              <div class="cs-panel-hdr">
+                <span>LOG STREAM</span>
+                <button class="cs-clear-btn" id="cs-clear-logs">Clear</button>
+              </div>
+              <div id="cs-log-area" class="cs-log-area">
+                <div class="cs-idle-msg">No logs yet&hellip;</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <!-- Live Trace Explorer -->
       <section id="trace-explorer">
         <h2><i class="fa-solid fa-timeline"></i> Live Trace Explorer</h2>
@@ -936,6 +1224,440 @@
       renderTraceList();
       /* auto-select first trace */
       if (TRACES.length > 0) selectTrace(TRACES[0]);
+    })();
+    </script>
+
+    <script>
+    /* ── Checkout Simulation ─────────────────────────────────────────── */
+    (function () {
+      const SPEED = 8; // stretch 1 simulated ms → SPEED real ms
+
+      const SVC_CLR = {
+        'api-gateway':  '#4e9af1',
+        'auth-svc':     '#2ecc71',
+        'order-svc':    '#e67e22',
+        'db':           '#9b59b6',
+        'cache':        '#1abc9c',
+        'notify-svc':   '#f39c12',
+      };
+
+      const PRODUCTS = [
+        { id:'p1', sku:'SKU-7701', name:'Wireless Headphones', price:79.99,  icon:'fa-headphones' },
+        { id:'p2', sku:'SKU-9912', name:'Laptop Backpack',     price:49.99,  icon:'fa-briefcase'  },
+        { id:'p3', sku:'SKU-4455', name:'Mechanical Keyboard', price:129.99, icon:'fa-keyboard'   },
+      ];
+
+      let cart = [], running = false, timers = [];
+      let totalReq = 0, totalErr = 0, lastLat = null;
+      // live span state
+      let liveSpans = {};   // id → span obj (with .done bool)
+      let spanOrder = [];   // insertion order
+      let traceScale = 342; // default; updated when root completes
+
+      /* ── event schedule builder ── */
+      function buildEvents(cart, isErr) {
+        const total = cart.reduce((s,p) => s + p.price * (p.qty||1), 0).toFixed(2);
+        const skus  = cart.map(p => "'" + p.sku + "'").join(', ');
+        const ordId = 'ord_' + (Math.floor(Math.random()*9000)+1000);
+        const uid   = 'usr_8821';
+
+        const ss = (id,par,svc,op,end,err,note) =>
+          ({ type:'ss', id, par, svc, op, end, err, note });
+        const se = (id, at) => ({ type:'se', id, at });
+        const lg = (at, lvl, svc, msg) => ({ type:'lg', at, lvl, svc, msg });
+
+        if (isErr) {
+          const evts = [
+            { at:0,   ...lg(0,  'INFO',  'api-gateway', `POST /checkout received — ${cart.length} item(s), $${total}`) },
+            { at:0,   ...ss('r', null,  'api-gateway', 'POST /checkout',  112, true) },
+            { at:8,   ...lg(8,  'DEBUG','auth-svc',    `Validating Bearer token for ${uid}`) },
+            { at:8,   ...ss('a', 'r',   'auth-svc',   'ValidateToken',    53, false) },
+            { at:53,  type:'se', id:'a' },
+            { at:53,  ...lg(53, 'DEBUG','auth-svc',    `Token valid — ${uid} authenticated`) },
+            { at:62,  ...lg(62, 'INFO', 'order-svc',   `Processing order — ${cart.length} item(s), $${total}`) },
+            { at:62,  ...ss('o', 'r',   'order-svc',  'ShipOrder',        112, true) },
+            { at:70,  ...lg(70, 'DEBUG','db',          `SELECT inventory WHERE sku IN (${skus})`) },
+            { at:70,  ...ss('d', 'o',   'db',         'SELECT inventory',  105, false) },
+            { at:105, type:'se', id:'d' },
+            { at:105, ...lg(105,'ERROR','db',          `Insufficient stock: ${cart[0].sku} — requested 2, available 0`) },
+            { at:108, ...lg(108,'ERROR','order-svc',   'InsufficientStockError — rolling back transaction') },
+            { at:110, type:'se', id:'o' },
+            { at:112, type:'se', id:'r' },
+            { at:112, ...lg(112,'ERROR','api-gateway', 'POST /checkout 500 ERROR — 112ms [InsufficientStockError]') },
+          ];
+          evts.forEach(e => { if (e.at === undefined) e.at = e.at || 0; });
+          return evts;
+        }
+
+        return [
+          { at:0,   ...lg(0,  'INFO',  'api-gateway', `POST /checkout received — ${cart.length} item(s), $${total}`) },
+          { at:0,   ...ss('r',  null,  'api-gateway', 'POST /checkout',   342, false) },
+          { at:8,   ...lg(8,  'DEBUG','auth-svc',    `Validating Bearer token for ${uid}`) },
+          { at:8,   ...ss('a', 'r',   'auth-svc',   'ValidateToken',      53, false) },
+          { at:53,  type:'se', id:'a' },
+          { at:53,  ...lg(53, 'DEBUG','auth-svc',    `Token valid — ${uid} authenticated`) },
+          { at:62,  ...lg(62, 'INFO', 'order-svc',   `Creating order — ${cart.length} item(s), $${total}`) },
+          { at:62,  ...ss('o', 'r',   'order-svc',  'CreateOrder',        260, false) },
+          { at:70,  ...lg(70, 'DEBUG','db',          `SELECT inventory WHERE sku IN (${skus})`) },
+          { at:70,  ...ss('d1','o',   'db',         'SELECT inventory',   105, false) },
+          { at:105, type:'se', id:'d1' },
+          { at:105, ...lg(105,'DEBUG','db',          'Inventory OK — all items in stock') },
+          { at:110, ...lg(110,'DEBUG','db',          `INSERT INTO orders VALUES ('${uid}', ${total}, 'pending')`) },
+          { at:110, ...ss('d2','o',   'db',         'INSERT orders',      199, false) },
+          { at:199, type:'se', id:'d2' },
+          { at:199, ...lg(199,'INFO', 'order-svc',   `Order created: ${ordId}`) },
+          { at:205, ...lg(205,'DEBUG','cache',       `SET order:${ordId} TTL=3600`) },
+          { at:205, ...ss('c', 'o',   'cache',      `SET order:${ordId.slice(-4)}`, 227, false) },
+          { at:227, type:'se', id:'c' },
+          { at:260, type:'se', id:'o' },
+          { at:268, ...lg(268,'INFO', 'notify-svc',  'Sending order confirmation to us***@example.com') },
+          { at:268, ...ss('n', 'r',   'notify-svc', 'SendEmail',          326, false) },
+          { at:326, type:'se', id:'n' },
+          { at:326, ...lg(326,'DEBUG','notify-svc',  'Email queued via sendgrid') },
+          { at:342, type:'se', id:'r' },
+          { at:342, ...lg(342,'INFO', 'api-gateway', `POST /checkout 200 OK — 342ms — ${ordId}`) },
+        ];
+      }
+
+      /* ── helpers ── */
+      function depth(id) {
+        const sp = liveSpans[id];
+        if (!sp || !sp.par) return 0;
+        return 1 + depth(sp.par);
+      }
+
+      /* ── render ── */
+      function renderProducts() {
+        const el = document.getElementById('cs-products');
+        el.innerHTML = PRODUCTS.map(p => `
+          <div class="cs-product">
+            <i class="fa-solid ${p.icon} cs-prod-icon"></i>
+            <div class="cs-prod-info">
+              <div class="cs-prod-name">${p.name}</div>
+              <div class="cs-prod-price">$${p.price.toFixed(2)}</div>
+            </div>
+            <button class="cs-add-btn" data-id="${p.id}" data-autodemo="add-${p.id}" ${running?'disabled':''}>
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>`).join('');
+        el.querySelectorAll('.cs-add-btn').forEach(b =>
+          b.addEventListener('click', () => addItem(b.dataset.id)));
+      }
+
+      function addItem(id) {
+        const p = PRODUCTS.find(x => x.id === id);
+        const ex = cart.find(x => x.id === id);
+        if (ex) ex.qty = (ex.qty||1) + 1;
+        else cart.push({...p, qty:1});
+        renderCart();
+      }
+
+      function removeItem(id) {
+        cart = cart.filter(x => x.id !== id);
+        renderCart();
+      }
+
+      function renderCart() {
+        const el = document.getElementById('cs-cart');
+        const btn = document.getElementById('cs-checkout-btn');
+        if (!cart.length) {
+          el.innerHTML = '<div class="cs-cart-empty">Cart is empty</div>';
+          btn.disabled = true;
+          return;
+        }
+        const total = cart.reduce((s,p) => s + p.price*(p.qty||1), 0);
+        el.innerHTML = `
+          <div class="cs-cart-items">
+            ${cart.map(p => `
+              <div class="cs-cart-item">
+                <span class="cs-ci-name">${p.name}${p.qty>1?' ×'+p.qty:''}</span>
+                <span class="cs-ci-price">$${(p.price*(p.qty||1)).toFixed(2)}</span>
+                <button class="cs-rm-btn" data-id="${p.id}"><i class="fa-solid fa-xmark"></i></button>
+              </div>`).join('')}
+          </div>
+          <div class="cs-cart-total">Total: <strong>$${total.toFixed(2)}</strong></div>`;
+        el.querySelectorAll('.cs-rm-btn').forEach(b =>
+          b.addEventListener('click', () => removeItem(b.dataset.id)));
+        btn.disabled = running;
+      }
+
+      function updateMetrics() {
+        document.getElementById('cs-m-req').textContent  = totalReq;
+        document.getElementById('cs-m-err').textContent  = totalErr;
+        document.getElementById('cs-m-lat').textContent  = lastLat !== null ? lastLat + 'ms' : '—';
+        const rate = totalReq ? Math.round(totalErr/totalReq*100)+'%' : '0%';
+        document.getElementById('cs-m-rate').textContent = rate;
+        document.getElementById('cs-m-err').style.color  = totalErr > 0 ? '#e74c3c' : '';
+        document.getElementById('cs-m-rate').style.color = totalErr > 0 ? '#e74c3c' : '';
+      }
+
+      function renderTraceArea() {
+        const el = document.getElementById('cs-trace-area');
+        if (!spanOrder.length) {
+          el.innerHTML = '<div class="cs-idle-msg">Initializing trace&hellip;</div>';
+          return;
+        }
+        const scale = traceScale;
+        el.innerHTML = spanOrder.map(id => {
+          const sp = liveSpans[id];
+          const d  = depth(id);
+          const color = sp.err ? '#e74c3c' : (SVC_CLR[sp.svc] || '#888');
+          const leftPct  = ((sp.start / scale) * 100).toFixed(2);
+          const widthPct = sp.done
+            ? Math.max(((sp.end - sp.start) / scale) * 100, 1).toFixed(2)
+            : '8';
+          const lbl = sp.done ? `${sp.end - sp.start}ms` : '…';
+          return `
+            <div class="cs-span-row${sp.err?' cs-err-row':''}">
+              <div class="cs-sr-label" style="padding-left:${5+d*12}px;">
+                <span class="cs-sr-dot" style="background:${color}"></span>
+                <span class="cs-sr-op">${sp.op}</span>
+                <span class="cs-sr-svc">${sp.svc}</span>
+              </div>
+              <div class="cs-bar-col">
+                <div class="cs-bar-wrap">
+                  <div class="cs-bar${sp.done?'':' cs-running'}"
+                       style="left:${leftPct}%;width:${widthPct}%;background:${color}">
+                    <span class="cs-bar-lbl">${lbl}</span>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+      }
+
+      function addLog(lvl, svc, msg) {
+        const el = document.getElementById('cs-log-area');
+        if (el.querySelector('.cs-idle-msg')) el.innerHTML = '';
+        const d = new Date();
+        const ts = d.toTimeString().slice(0,8) + '.' + String(d.getMilliseconds()).padStart(3,'0');
+        const lvlColors = { INFO:'#4e9af1', DEBUG:'var(--color-secondary)', ERROR:'#e74c3c', WARN:'#f39c12' };
+        const line = document.createElement('div');
+        line.className = 'cs-log-line';
+        line.innerHTML = `<span class="cs-log-ts">${ts}</span>`
+          + `<span style="color:${lvlColors[lvl]||'#888'};font-weight:700">[${lvl}]</span>`
+          + `<span class="cs-log-svc" style="color:${SVC_CLR[svc]||'#888'}">${svc}</span>`
+          + `<span class="cs-log-msg">${msg}</span>`;
+        el.appendChild(line);
+        el.scrollTop = el.scrollHeight;
+      }
+
+      /* ── simulation runner ── */
+      function runSim(isErr) {
+        running = true;
+        liveSpans = {}; spanOrder = []; traceScale = isErr ? 112 : 342;
+        timers.forEach(clearTimeout); timers = [];
+
+        const btn = document.getElementById('cs-checkout-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing…';
+
+        const statusEl = document.getElementById('cs-trace-status');
+        statusEl.textContent = 'running';
+        statusEl.className = 'cs-status-running';
+
+        document.getElementById('cs-trace-area').innerHTML =
+          '<div class="cs-idle-msg">Initializing trace&hellip;</div>';
+
+        const events = buildEvents(cart, isErr);
+
+        events.forEach(evt => {
+          const t = setTimeout(() => {
+            if (evt.type === 'lg') {
+              addLog(evt.lvl, evt.svc, evt.msg);
+
+            } else if (evt.type === 'ss') {
+              // span start
+              liveSpans[evt.id] = { id:evt.id, par:evt.par, svc:evt.svc, op:evt.op,
+                                    start:evt.at, end:evt.end, err:evt.err, done:false };
+              spanOrder.push(evt.id);
+              renderTraceArea();
+
+            } else if (evt.type === 'se') {
+              // span end
+              if (liveSpans[evt.id]) {
+                liveSpans[evt.id].done = true;
+                // root span = no parent → trace complete
+                if (!liveSpans[evt.id].par) {
+                  lastLat = liveSpans[evt.id].end;
+                  totalReq++;
+                  if (liveSpans[evt.id].err) totalErr++;
+                  updateMetrics();
+                  finishSim(liveSpans[evt.id].err);
+                }
+              }
+              renderTraceArea();
+            }
+          }, evt.at * SPEED);
+          timers.push(t);
+        });
+      }
+
+      function finishSim(isErr) {
+        running = false;
+        const btn = document.getElementById('cs-checkout-btn');
+        const statusEl = document.getElementById('cs-trace-status');
+
+        if (isErr) {
+          btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Failed — Try Again';
+          btn.style.color = '#e74c3c'; btn.style.borderColor = '#e74c3c';
+          statusEl.textContent = '✕ error'; statusEl.className = 'cs-status-error';
+        } else {
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Order Placed!';
+          btn.style.color = '#2ecc71'; btn.style.borderColor = '#2ecc71';
+          statusEl.textContent = '✓ ok'; statusEl.className = 'cs-status-ok';
+        }
+        btn.disabled = false;
+
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> Checkout';
+          btn.style.color = ''; btn.style.borderColor = '';
+          if (!isErr) { cart = []; renderCart(); }
+          else btn.disabled = false;
+        }, 2200);
+      }
+
+      /* ── init ── */
+      renderProducts();
+      renderCart();
+      updateMetrics();
+
+      document.getElementById('cs-checkout-btn').addEventListener('click', () => {
+        if (running || !cart.length) return;
+        runSim(document.getElementById('cs-error-mode').checked);
+      });
+      document.getElementById('cs-clear-logs').addEventListener('click', () => {
+        document.getElementById('cs-log-area').innerHTML =
+          '<div class="cs-idle-msg">No logs yet&hellip;</div>';
+      });
+
+      /* ── Watch Demo (autonomous cursor) ─────────────────────── */
+      let demoActive = false;
+      let demoCursor = null;
+      let demoRing   = null;
+
+      function createCursor() {
+        if (demoCursor) return;
+        demoCursor = document.createElement('div');
+        demoCursor.className = 'cs-cursor';
+        demoCursor.innerHTML = `
+          <svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1 L1 21 L6 16 L10 25 L13 24 L9 15 L16 15 Z"
+                  fill="white" stroke="#1a1a1a" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+          <div class="cs-cursor-ring"></div>`;
+        document.body.appendChild(demoCursor);
+        demoRing = demoCursor.querySelector('.cs-cursor-ring');
+      }
+
+      function teleportCursor(el) {
+        const r = el.getBoundingClientRect();
+        const x = r.left + r.width  / 2;
+        const y = r.top  + r.height / 2;
+        demoCursor.style.transition = 'none';
+        demoCursor.style.transform  = `translate(${x}px,${y}px)`;
+      }
+
+      function glideTo(el) {
+        return new Promise(resolve => {
+          if (!demoActive) { resolve(); return; }
+          const r = el.getBoundingClientRect();
+          const x = r.left + r.width  / 2;
+          const y = r.top  + r.height / 2;
+          demoCursor.style.transition = 'transform 0.52s cubic-bezier(0.25,0.46,0.45,0.94)';
+          demoCursor.style.transform  = `translate(${x}px,${y}px)`;
+          setTimeout(resolve, 560);
+        });
+      }
+
+      function clickEl(el) {
+        return new Promise(resolve => {
+          if (!demoActive) { resolve(); return; }
+          demoRing.classList.remove('cs-ring-pop');
+          void demoRing.offsetWidth;
+          demoRing.classList.add('cs-ring-pop');
+          setTimeout(() => { el.click(); resolve(); }, 160);
+        });
+      }
+
+      function demoSleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      async function runWatchDemo() {
+        demoActive = true;
+        const watchBtn = document.getElementById('cs-watch-btn');
+        watchBtn.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Demo';
+        watchBtn.classList.add('cs-demo-on');
+
+        createCursor();
+
+        // Reset store state
+        cart = [];
+        renderCart();
+
+        // Teleport cursor to first add button (off-screen initially invisible)
+        const p1btn = document.querySelector('[data-autodemo="add-p1"]');
+        if (!p1btn) { stopWatchDemo(); return; }
+        teleportCursor(p1btn);
+        demoCursor.style.opacity = '0';
+        await demoSleep(80);
+        demoCursor.style.transition = 'opacity 0.2s, transform 0.52s cubic-bezier(0.25,0.46,0.45,0.94)';
+        demoCursor.style.opacity = '1';
+
+        if (!demoActive) return;
+
+        // Add Wireless Headphones
+        await glideTo(p1btn);
+        await clickEl(p1btn);
+        await demoSleep(480);
+
+        if (!demoActive) return;
+
+        // Add Mechanical Keyboard
+        const p3btn = document.querySelector('[data-autodemo="add-p3"]');
+        if (p3btn) {
+          await glideTo(p3btn);
+          await clickEl(p3btn);
+          await demoSleep(600);
+        }
+
+        if (!demoActive) return;
+
+        // Move to Checkout
+        const chkBtn = document.querySelector('[data-autodemo="checkout"]');
+        if (chkBtn && !chkBtn.disabled) {
+          await glideTo(chkBtn);
+          await demoSleep(200);
+          await clickEl(chkBtn);
+        }
+
+        // Fade cursor out after checkout starts
+        await demoSleep(700);
+        demoCursor.style.opacity = '0';
+        await demoSleep(300);
+
+        stopWatchDemo(true);
+      }
+
+      function stopWatchDemo(keepLabel) {
+        demoActive = false;
+        if (demoCursor) demoCursor.style.opacity = '0';
+        const watchBtn = document.getElementById('cs-watch-btn');
+        if (!keepLabel) {
+          // reset cart if stopped mid-way
+          cart = [];
+          renderCart();
+        }
+        watchBtn.innerHTML = '<i class="fa-solid fa-circle-play"></i> Watch Demo';
+        watchBtn.classList.remove('cs-demo-on');
+      }
+
+      document.getElementById('cs-watch-btn').addEventListener('click', () => {
+        if (demoActive) { stopWatchDemo(); return; }
+        if (running) return;
+        runWatchDemo();
+      });
     })();
     </script>
 
