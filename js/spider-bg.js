@@ -102,7 +102,7 @@
   // Structural body fill (legs, outer shell)
   const BODY_FILL_COLORS = {
     'theme-ember':  '#e8651a',  // ember orange
-    'theme-forest': '#071a08',
+    'theme-forest': '#39ff14',  // neon green
     'theme-arctic': '#f0f8ff',  // ice white
     'theme-miami':  '#00e5ff',  // neon blue
   };
