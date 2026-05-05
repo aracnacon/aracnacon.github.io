@@ -43,23 +43,13 @@
     /* ── Electric body ── */
     .sb-circuit-glow {
       animation: sb-breathe 2s ease-in-out infinite alternate;
-      filter: drop-shadow(0 0 2px #00ffcc);
     }
     @keyframes sb-breathe {
-      from { opacity: 0.08; }
-      to   { opacity: 0.3;  }
-    }
-    .sb-spark {
-      filter: drop-shadow(0 0 2px #00ffcc) drop-shadow(0 0 4px #fff);
+      from { opacity: 0.2; }
+      to   { opacity: 0.7; }
     }
     .sb-outer-bulb.sb-bulb-on {
       animation: sb-bulb 1.5s ease-out forwards;
-    }
-    @keyframes sb-bulb {
-      0%   { fill: #808080; filter: none; }
-      5%   { fill: #ffffff; filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 40px #ffe57a); }
-      30%  { fill: #fffde7; filter: drop-shadow(0 0 10px #ffe57a) drop-shadow(0 0 20px #ffe57a); }
-      100% { fill: #fff8e1; filter: drop-shadow(0 0 3px #ffe57a) drop-shadow(0 0 8px #ffe57a); }
     }
   `;
   document.head.appendChild(style);
@@ -94,6 +84,58 @@
 
   const OUTER_IDS = ['path13','path14','path15','path16'];
 
+  // ── Theme color ─────────────────────────────────────────────────
+  const THEME_COLORS = {
+    'theme-ember':  '#e8651a',
+    'theme-forest': '#1b5e20',
+    'theme-arctic': '#0077b6',
+    'theme-miami':  '#ff2d95',
+  };
+
+  const CONTRAST_COLORS = {
+    'theme-ember':  '#ffd700',  // gold vs orange
+    'theme-forest': '#a5d6a7',  // light green outer
+    'theme-arctic': '#ffb300',  // amber vs dark blue
+    'theme-miami':  '#00e5ff',  // cyan vs pink
+  };
+
+  function getThemeColor() {
+    const cls = document.documentElement.className;
+    for (const [key, color] of Object.entries(THEME_COLORS)) {
+      if (cls.includes(key)) return color;
+    }
+    return '#1e90ff'; // Midnight default
+  }
+
+  function getContrastColor() {
+    const cls = document.documentElement.className;
+    for (const [key, color] of Object.entries(CONTRAST_COLORS)) {
+      if (cls.includes(key)) return color;
+    }
+    return '#ffd700'; // gold vs midnight blue
+  }
+
+  let glowEl = null, sparkEl = null, lastNeonColor = '';
+  const neonStyle = document.createElement('style');
+  document.head.appendChild(neonStyle);
+
+  function applyNeonColor(color) {
+    const contrast = getContrastColor();
+    neonStyle.textContent = `
+      .sb-circuit-glow { filter: drop-shadow(0 0 4px ${color}) drop-shadow(0 0 10px ${color}); }
+      .sb-spark { filter: drop-shadow(0 0 4px ${color}) drop-shadow(0 0 10px ${color}) drop-shadow(0 0 2px #fff); }
+      @keyframes sb-bulb {
+        0%   { fill: #808080; filter: none; }
+        5%   { fill: #ffffff; filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 40px ${contrast}); }
+        30%  { fill: #fffde7; filter: drop-shadow(0 0 10px ${contrast}) drop-shadow(0 0 20px ${contrast}); }
+        100% { fill: #fff8e1; filter: drop-shadow(0 0 3px ${contrast}) drop-shadow(0 0 8px ${contrast}); }
+      }
+    `;
+    if (glowEl) glowEl.style.stroke = color;
+    if (sparkEl) sparkEl.style.stroke = color;
+    lastNeonColor = color;
+  }
+
   fetch('images/spiderTrace.svg')
     .then(r => r.text())
     .then(raw => {
@@ -126,15 +168,21 @@
 
         const glow = inner.cloneNode(true);
         glow.removeAttribute('id');
-        glow.style.cssText = 'fill:none;stroke:#00ffcc;stroke-width:3';
+        glow.setAttribute('fill', 'none');
+        glow.setAttribute('stroke-width', '3');
         glow.classList.add('sb-circuit-glow');
         svg.appendChild(glow);
+        glowEl = glow;
 
         const spark = inner.cloneNode(true);
         spark.removeAttribute('id');
-        spark.style.cssText = 'fill:none;stroke:#e0ffff;stroke-width:2';
+        spark.setAttribute('fill', 'none');
+        spark.setAttribute('stroke-width', '2');
         spark.classList.add('sb-spark');
         svg.appendChild(spark);
+        sparkEl = spark;
+
+        applyNeonColor(getThemeColor());
 
         OUTER_IDS.forEach(id => {
           const p = svg.getElementById(id);
@@ -214,6 +262,8 @@
 
   function tick() {
     requestAnimationFrame(tick);
+    const c = getThemeColor();
+    if (c !== lastNeonColor) applyNeonColor(c);
     if (!running) return;
 
     const dx = targetX - x;

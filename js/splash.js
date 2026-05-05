@@ -1,4 +1,11 @@
 (function () {
+  // ── Theme colors ────────────────────────────────────────────────
+  const _THEME_COLORS    = { 'theme-ember':'#e8651a','theme-forest':'#4caf50','theme-arctic':'#0077b6','theme-miami':'#ff2d95' };
+  const _CONTRAST_COLORS = { 'theme-ember':'#ffd700','theme-forest':'#e040fb','theme-arctic':'#ffb300','theme-miami':'#00e5ff' };
+  const _cls = document.documentElement.className;
+  const _primary  = Object.entries(_THEME_COLORS).find(([k])  => _cls.includes(k))?.[1] || '#1e90ff';
+  const _contrast = Object.entries(_CONTRAST_COLORS).find(([k]) => _cls.includes(k))?.[1] || '#ffd700';
+
   const TIMEOUT_MS = 2 * 60 * 1000;
   const now        = Date.now();
   const lastVisit  = parseInt(sessionStorage.getItem('splash_last') || '0');
@@ -139,14 +146,14 @@
         // Dim base glow outlining the circuit path
         const circuitGlow = innerBody.cloneNode(true);
         circuitGlow.removeAttribute('id');
-        circuitGlow.style.cssText = 'fill:none;stroke:#00ffcc;stroke-width:3';
+        circuitGlow.style.cssText = `fill:none;stroke:${_primary};stroke-width:3`;
         circuitGlow.classList.add('circuit-glow');
         svgEl.appendChild(circuitGlow);
 
         // The traveling spark
         const spark = innerBody.cloneNode(true);
         spark.removeAttribute('id');
-        spark.style.cssText = 'fill:none;stroke:#e0ffff;stroke-width:2';
+        spark.style.cssText = `fill:none;stroke:${_primary};stroke-width:2`;
         spark.classList.add('electric-spark');
         svgEl.appendChild(spark);
 
@@ -163,7 +170,7 @@
           st.textContent = `
             .circuit-glow {
               animation: circuit-breathe 2s ease-in-out infinite alternate;
-              filter: drop-shadow(0 0 2px #00ffcc);
+              filter: drop-shadow(0 0 2px ${_primary});
             }
             @keyframes circuit-breathe {
               from { opacity: 0.08; }
@@ -173,7 +180,7 @@
               stroke-dasharray: ${pulse.toFixed(1)} ${(len - pulse).toFixed(1)};
               stroke-dashoffset: ${len.toFixed(1)};
               animation: spark-travel ${cycleDuration}ms linear infinite;
-              filter: drop-shadow(0 0 2px #00ffcc) drop-shadow(0 0 5px #fff);
+              filter: drop-shadow(0 0 2px ${_primary}) drop-shadow(0 0 5px #fff);
             }
             @keyframes spark-travel {
               to { stroke-dashoffset: 0; }
@@ -183,9 +190,9 @@
             }
             @keyframes bulb-settle {
               0%   { fill: #808080; filter: none; }
-              5%   { fill: #ffffff; filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px #ffe57a); }
-              30%  { fill: #fffde7; filter: drop-shadow(0 0 15px #ffe57a) drop-shadow(0 0 30px #ffe57a); }
-              100% { fill: #fff8e1; filter: drop-shadow(0 0 4px #ffe57a) drop-shadow(0 0 10px #ffe57a); }
+              5%   { fill: #ffffff; filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px ${_contrast}); }
+              30%  { fill: #fffde7; filter: drop-shadow(0 0 15px ${_contrast}) drop-shadow(0 0 30px ${_contrast}); }
+              100% { fill: #fff8e1; filter: drop-shadow(0 0 4px ${_contrast}) drop-shadow(0 0 10px ${_contrast}); }
             }
           `;
           document.head.appendChild(st);

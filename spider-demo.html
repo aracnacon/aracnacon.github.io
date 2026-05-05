@@ -187,12 +187,35 @@
       transition: opacity 0.2s;
     }
     .home-link:hover { opacity: 1; }
+
+    /* ── ESC button ── */
+    #esc-btn {
+      display: none;
+      position: fixed;
+      top: 18px;
+      right: 20px;
+      z-index: 100;
+      background: transparent;
+      border: 1px solid #00ffcc55;
+      color: #00ffcc;
+      font-family: ui-monospace, 'Courier New', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    #esc-btn.visible { display: block; }
+    #esc-btn:hover { opacity: 1; border-color: #00ffcc; }
   </style>
 </head>
 <body>
 
 <canvas id="game-canvas"></canvas>
 <div id="spider"></div>
+<button id="esc-btn">ESC ✕</button>
 
 <div id="hud">
   <span>Score: <b id="hud-score">0</b></span>
@@ -925,6 +948,7 @@
   function endGame(reason = 'BURNED') {
     isOver = true;
     clearInterval(spawnTimer);
+    escBtn.classList.remove('visible');
     goTitle.textContent  = reason;
     goScore.textContent  = `Final score: ${score}`;
     gameOverEl.classList.add('show');
@@ -939,9 +963,18 @@
     }, 7000);
   }
 
+  const escBtn = document.getElementById('esc-btn');
+  function escapeToHome() { window.location.href = 'index.html'; }
+
+  escBtn.addEventListener('click', escapeToHome);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && gameStarted && !isOver) escapeToHome();
+  });
+
   document.getElementById('start-btn').addEventListener('click', () => {
     document.getElementById('start-screen').classList.remove('show');
     gameStarted = true;
+    escBtn.classList.add('visible');
     initAudio();
     startSpawning();
   });
