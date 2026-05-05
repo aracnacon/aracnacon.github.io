@@ -21,6 +21,7 @@ A personal portfolio website hosted on GitHub Pages at [aracnacon.github.io](htt
 - **Nav "Try Me!" Prompts** - "Try Me!" text alternates fading in on the theme toggle and spider game nav buttons, drawing attention to them. Hidden on mobile.
 - **Crawling Spider Background** - A miniature version of the SVG spider crawls around every page with a walk-cycle animation and electric body effect.
 - **Spider Fire Fighter Game** (`spider-demo.html`) - Canvas-based mini-game: mouse-guided spider shoots laser bolts to extinguish spreading fires while dodging falling Matrix code rain. Features a how-to-play start screen, back-to-home link, Web Audio API sound effects (auto-silenced after 7s on game over), 3 lives, score tracking, and particle explosions.
+- **Live Trace Explorer** (`opentelemetry.html`) - Interactive Jaeger-style distributed trace viewer with 3 pre-loaded realistic traces (checkout flow, user profile, error scenario). Select a trace to render a color-coded Gantt span timeline; click any span to inspect its full OTel attributes. 100% client-side, no backend required.
 - **Theme Switcher** - 5 visual themes (Midnight, Ember, Forest, Arctic, Miami) each with unique video background, fonts, colors, and component styling.
 - **Typewriter Effect** - Animated subtitle text on each page.
 - **Scroll Animations** - GSAP-powered reveal animations on scroll.
