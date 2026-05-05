@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Splash Dev</title>
+  <style>
+    body { margin: 0; background: #111; }
+  </style>
+</head>
+<body>
+  <script src="js/theme-switcher.js"></script>
+  <script>
+    // Always show splash, never auto-dismiss, no session gate
+    (function patchSplash() {
+      const _set = sessionStorage.setItem.bind(sessionStorage);
+      const _get = sessionStorage.getItem.bind(sessionStorage);
+      sessionStorage.setItem = function(k, v) { if (k !== 'splash_last') _set(k, v); };
+      sessionStorage.getItem = function(k)    { return k === 'splash_last' ? null : _get(k); };
+    })();
+  </script>
+  <script src="js/splash.js"></script>
+</body>
+</html>
