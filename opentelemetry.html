@@ -746,6 +746,30 @@
 
             <div class="cs-panel">
               <div class="cs-panel-hdr">
+                <span>SLO / SLI &mdash; Latency (P95 &lt; 300ms)</span>
+                <span id="cs-lat-badge" class="cs-slo-badge cs-slo-waiting">● WAITING</span>
+              </div>
+              <div class="cs-slo-body">
+                <div class="cs-slo-stats">
+                  <div>
+                    <div class="cs-slo-val" id="cs-lat-sli">&mdash;</div>
+                    <div class="cs-slo-key">Requests &lt; 300ms</div>
+                  </div>
+                  <div>
+                    <div class="cs-slo-val">95%</div>
+                    <div class="cs-slo-key">SLO Target</div>
+                  </div>
+                  <div>
+                    <div class="cs-slo-val" id="cs-lat-p95">&mdash;</div>
+                    <div class="cs-slo-key">P95 Latency</div>
+                  </div>
+                </div>
+                <canvas id="cs-lat-chart" height="48"></canvas>
+              </div>
+            </div>
+
+            <div class="cs-panel">
+              <div class="cs-panel-hdr">
                 <span>ACTIVE TRACE</span>
                 <div style="display:flex;align-items:center;gap:4px;">
                   <span id="cs-trace-status" class="cs-status-idle">idle</span>
@@ -825,8 +849,10 @@
       let cart = [], running = false, timers = [];
       let totalReq = 0, totalErr = 0, lastLat = null;
       let requestHistory = []; // {ok, latency}
-      const SLO_TARGET  = 99.5;
-      const SLO_WINDOW  = 20;
+      const SLO_TARGET     = 99.5;
+      const SLO_WINDOW     = 20;
+      const LAT_THRESHOLD  = 300;  // ms — P95 target
+      const LAT_SLO_TARGET = 95;   // % of requests must be under threshold
       // live span state
       let liveSpans = {};   // id → span obj (with .done bool)
       let spanOrder = [];   // insertion order
@@ -1030,6 +1056,97 @@
         ctx.globalAlpha = 1;
       }
 
+      function updateLatencySLO() {
+        const sliEl  = document.getElementById('cs-lat-sli');
+        const p95El  = document.getElementById('cs-lat-p95');
+        const badge  = document.getElementById('cs-lat-badge');
+        const canvas = document.getElementById('cs-lat-chart');
+
+        if (!requestHistory.length) {
+          sliEl.textContent = '—'; p95El.textContent = '—';
+          badge.textContent = '● WAITING'; badge.className = 'cs-slo-badge cs-slo-waiting';
+          sliEl.style.color = ''; p95El.style.color = '';
+          drawLatencyChart(canvas, []);
+          return;
+        }
+
+        const fast = requestHistory.filter(r => r.latency < LAT_THRESHOLD).length;
+        const sli  = fast / requestHistory.length * 100;
+
+        // P95: sort latencies, take 95th percentile value
+        const sorted = [...requestHistory].sort((a, b) => a.latency - b.latency);
+        const p95idx = Math.max(0, Math.ceil(sorted.length * 0.95) - 1);
+        const p95val = sorted[p95idx].latency;
+
+        sliEl.textContent = sli.toFixed(1) + '%';
+        p95El.textContent = p95val + 'ms';
+
+        if (sli >= LAT_SLO_TARGET) {
+          badge.textContent = '● HEALTHY'; badge.className = 'cs-slo-badge cs-slo-healthy';
+          sliEl.style.color = '#2ecc71'; p95El.style.color = '#2ecc71';
+        } else if (sli >= LAT_SLO_TARGET - 5) {
+          badge.textContent = '● AT RISK'; badge.className = 'cs-slo-badge cs-slo-at-risk';
+          sliEl.style.color = '#f39c12'; p95El.style.color = '#f39c12';
+        } else {
+          badge.textContent = '● BREACHED'; badge.className = 'cs-slo-badge cs-slo-breached';
+          sliEl.style.color = '#e74c3c'; p95El.style.color = '#e74c3c';
+        }
+
+        drawLatencyChart(canvas, requestHistory);
+      }
+
+      function drawLatencyChart(canvas, history) {
+        const W = canvas.offsetWidth || 300;
+        const H = 48;
+        canvas.width = W; canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, W, H);
+
+        ctx.fillStyle = 'rgba(var(--color-primary-rgb, 30,144,255), 0.04)';
+        ctx.fillRect(0, 0, W, H);
+
+        if (!history.length) {
+          ctx.fillStyle = 'rgba(128,128,128,0.35)';
+          ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('No requests yet', W / 2, H / 2);
+          return;
+        }
+
+        // Threshold line
+        const data   = history.slice(-SLO_WINDOW);
+        const maxLat = Math.max(...data.map(r => r.latency), LAT_THRESHOLD * 1.5);
+        const threshY = H - (LAT_THRESHOLD / maxLat) * H;
+        ctx.strokeStyle = 'rgba(243,156,18,0.55)';
+        ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(0, threshY); ctx.lineTo(W, threshY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Bars
+        const barW = Math.max(3, W / SLO_WINDOW - 2);
+        const step  = W / SLO_WINDOW;
+        data.forEach((req, i) => {
+          const x    = i * step + (step - barW) / 2;
+          const barH = Math.max(4, (req.latency / maxLat) * (H - 6));
+          ctx.fillStyle   = req.latency < LAT_THRESHOLD ? '#2ecc71' : '#e74c3c';
+          ctx.globalAlpha = 0.75;
+          ctx.fillRect(x, H - barH, barW, barH);
+        });
+        ctx.globalAlpha = 1;
+
+        // P95 rolling line
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        data.forEach((_, i) => {
+          const window = data.slice(0, i + 1).sort((a, b) => a.latency - b.latency);
+          const pidx   = Math.max(0, Math.ceil(window.length * 0.95) - 1);
+          const x = i * step + step / 2;
+          const y = H - (window[pidx].latency / maxLat) * H;
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
       /* ── render ── */
       function renderProducts() {
         const el = document.getElementById('cs-products');
@@ -1200,6 +1317,7 @@
       function finishSim(isErr, isBadCode) {
         requestHistory.push({ ok: !isErr, latency: lastLat || 0 });
         updateSLO();
+        updateLatencySLO();
         running = false;
         const btn = document.getElementById('cs-checkout-btn');
         const statusEl = document.getElementById('cs-trace-status');
@@ -1232,6 +1350,7 @@
       renderCart();
       updateMetrics();
       updateSLO();
+      updateLatencySLO();
 
       document.getElementById('cs-checkout-btn').addEventListener('click', () => {
         if (running || !cart.length) return;
