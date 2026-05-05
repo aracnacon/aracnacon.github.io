@@ -318,6 +318,41 @@
       .cs-bar.cs-running { animation: cs-pulse 0.7s infinite alternate; }
       .cs-bar-lbl { font-size: 0.6rem; color: #fff; font-weight: 600; white-space: nowrap; text-shadow: 0 0 3px rgba(0,0,0,0.5); }
 
+      /* SLO / SLI panel */
+      .cs-slo-body {
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .cs-slo-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        text-align: center;
+      }
+      .cs-slo-val {
+        font-size: 1.05rem;
+        font-weight: 700;
+        font-family: 'Orbitron', monospace;
+        color: var(--color-text);
+        line-height: 1;
+        margin-bottom: 3px;
+        transition: color 0.3s;
+      }
+      .cs-slo-key {
+        font-size: 0.58rem;
+        color: var(--color-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .cs-slo-badge { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; }
+      .cs-slo-healthy { color: #2ecc71; }
+      .cs-slo-at-risk { color: #f39c12; }
+      .cs-slo-breached { color: #e74c3c; }
+      .cs-slo-waiting { color: var(--color-secondary); }
+      #cs-slo-chart { width: 100%; display: block; border-radius: 3px; }
+
       /* Log stream */
       .cs-log-area {
         min-height: 90px; max-height: 160px; overflow-y: auto;
@@ -673,6 +708,30 @@
 
             <div class="cs-panel">
               <div class="cs-panel-hdr">
+                <span>SLO / SLI &mdash; Availability</span>
+                <span id="cs-slo-badge" class="cs-slo-badge cs-slo-waiting">● WAITING</span>
+              </div>
+              <div class="cs-slo-body">
+                <div class="cs-slo-stats">
+                  <div>
+                    <div class="cs-slo-val" id="cs-slo-sli">&mdash;</div>
+                    <div class="cs-slo-key">Availability SLI</div>
+                  </div>
+                  <div>
+                    <div class="cs-slo-val">99.5%</div>
+                    <div class="cs-slo-key">SLO Target</div>
+                  </div>
+                  <div>
+                    <div class="cs-slo-val" id="cs-slo-budget">&mdash;</div>
+                    <div class="cs-slo-key">Error Budget</div>
+                  </div>
+                </div>
+                <canvas id="cs-slo-chart" height="48"></canvas>
+              </div>
+            </div>
+
+            <div class="cs-panel">
+              <div class="cs-panel-hdr">
                 <span>ACTIVE TRACE</span>
                 <div style="display:flex;align-items:center;gap:4px;">
                   <span id="cs-trace-status" class="cs-status-idle">idle</span>
@@ -766,6 +825,9 @@
 
       let cart = [], running = false, timers = [];
       let totalReq = 0, totalErr = 0, lastLat = null;
+      let requestHistory = []; // {ok, latency}
+      const SLO_TARGET  = 99.5;
+      const SLO_WINDOW  = 20;
       // live span state
       let liveSpans = {};   // id → span obj (with .done bool)
       let spanOrder = [];   // insertion order
@@ -861,6 +923,112 @@
         const sp = liveSpans[id];
         if (!sp || !sp.par) return 0;
         return 1 + depth(sp.par);
+      }
+
+      /* ── SLO / SLI ── */
+      function updateSLO() {
+        const sliEl    = document.getElementById('cs-slo-sli');
+        const budgetEl = document.getElementById('cs-slo-budget');
+        const badge    = document.getElementById('cs-slo-badge');
+        const canvas   = document.getElementById('cs-slo-chart');
+
+        if (!totalReq) {
+          sliEl.textContent    = '—';
+          budgetEl.textContent = '—';
+          badge.textContent    = '● WAITING';
+          badge.className      = 'cs-slo-badge cs-slo-waiting';
+          sliEl.style.color    = '';
+          drawSLOChart(canvas, []);
+          return;
+        }
+
+        const sli             = (totalReq - totalErr) / totalReq * 100;
+        const allowedErrors   = totalReq * (1 - SLO_TARGET / 100);
+        const budgetRemaining = Math.max(0, (1 - totalErr / Math.max(allowedErrors, 0.001)) * 100);
+
+        sliEl.textContent    = sli.toFixed(1) + '%';
+        budgetEl.textContent = budgetRemaining.toFixed(0) + '%';
+
+        if (sli >= SLO_TARGET) {
+          badge.textContent = '● HEALTHY';
+          badge.className   = 'cs-slo-badge cs-slo-healthy';
+          sliEl.style.color = '#2ecc71';
+          budgetEl.style.color = '#2ecc71';
+        } else if (sli >= SLO_TARGET - 1) {
+          badge.textContent = '● AT RISK';
+          badge.className   = 'cs-slo-badge cs-slo-at-risk';
+          sliEl.style.color = '#f39c12';
+          budgetEl.style.color = '#f39c12';
+        } else {
+          badge.textContent = '● BREACHED';
+          badge.className   = 'cs-slo-badge cs-slo-breached';
+          sliEl.style.color = '#e74c3c';
+          budgetEl.style.color = '#e74c3c';
+        }
+
+        drawSLOChart(canvas, requestHistory);
+      }
+
+      function drawSLOChart(canvas, history) {
+        const W = canvas.offsetWidth || 300;
+        const H = 48;
+        canvas.width  = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, W, H);
+
+        // Background
+        ctx.fillStyle = 'rgba(var(--color-primary-rgb, 30,144,255), 0.04)';
+        ctx.fillRect(0, 0, W, H);
+
+        if (!history.length) {
+          ctx.fillStyle = 'rgba(128,128,128,0.35)';
+          ctx.font = '10px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('No requests yet', W / 2, H / 2);
+          return;
+        }
+
+        // SLO target line
+        const sloY = H - (SLO_TARGET / 100) * H;
+        ctx.strokeStyle = 'rgba(243,156,18,0.55)';
+        ctx.lineWidth   = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(0, sloY); ctx.lineTo(W, sloY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Bars (rolling window)
+        const data   = history.slice(-SLO_WINDOW);
+        const maxLat = Math.max(...data.map(r => r.latency), 342);
+        const barW   = Math.max(3, W / SLO_WINDOW - 2);
+        const step   = W / SLO_WINDOW;
+
+        data.forEach((req, i) => {
+          const x    = i * step + (step - barW) / 2;
+          const barH = Math.max(4, (req.latency / maxLat) * (H - 6));
+          const y    = H - barH;
+          ctx.fillStyle   = req.ok ? '#2ecc71' : '#e74c3c';
+          ctx.globalAlpha = 0.75;
+          ctx.fillRect(x, y, barW, barH);
+        });
+        ctx.globalAlpha = 1;
+
+        // Rolling SLI line over the window
+        let okCount = 0;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth   = 1.5;
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        data.forEach((req, i) => {
+          if (req.ok) okCount++;
+          const ratio = okCount / (i + 1);
+          const x = i * step + step / 2;
+          const y = H - ratio * H;
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.globalAlpha = 1;
       }
 
       /* ── render ── */
@@ -1031,6 +1199,8 @@
       }
 
       function finishSim(isErr, isBadCode) {
+        requestHistory.push({ ok: !isErr, latency: lastLat || 0 });
+        updateSLO();
         running = false;
         const btn = document.getElementById('cs-checkout-btn');
         const statusEl = document.getElementById('cs-trace-status');
@@ -1062,6 +1232,7 @@
       renderProducts();
       renderCart();
       updateMetrics();
+      updateSLO();
 
       document.getElementById('cs-checkout-btn').addEventListener('click', () => {
         if (running || !cart.length) return;
