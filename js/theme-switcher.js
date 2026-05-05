@@ -8,11 +8,11 @@
   'use strict';
 
   var themes = [
-    { className: '',              label: 'Midnight Blue', icon: 'fa-palette'             },
-    { className: 'theme-ember',   label: 'Ember',         icon: 'fa-fire-flame-curved'   },
-    { className: 'theme-forest',  label: 'Forest',        icon: 'fa-seedling'            },
-    { className: 'theme-arctic',  label: 'Arctic',        icon: 'fa-snowflake'           },
-    { className: 'theme-miami',   label: 'Miami Glow',    icon: 'fa-wand-magic-sparkles' }
+    { className: '',              label: 'Midnight Blue', icon: 'fa-palette',             spiderIcon: 'images/icons/spider-midnight.svg' },
+    { className: 'theme-ember',   label: 'Ember',         icon: 'fa-fire-flame-curved',   spiderIcon: 'images/icons/spider-ember.svg'    },
+    { className: 'theme-forest',  label: 'Forest',        icon: 'fa-seedling',            spiderIcon: 'images/icons/spider-forest.svg'   },
+    { className: 'theme-arctic',  label: 'Arctic',        icon: 'fa-snowflake',           spiderIcon: 'images/icons/spider-arctic.svg'   },
+    { className: 'theme-miami',   label: 'Miami Glow',    icon: 'fa-wand-magic-sparkles', spiderIcon: 'images/icons/spider-miami.svg'    }
   ];
 
   var SESSION_KEY = 'aracna-theme';
@@ -70,6 +70,12 @@
         }).join(' ');
         icon.classList.add(themes[index].icon);
       }
+    });
+
+    // Swap themed spider home icons
+    var spiderImgs = document.querySelectorAll('[data-spider-icon]');
+    spiderImgs.forEach(function (img) {
+      img.src = themes[index].spiderIcon;
     });
   }
 
