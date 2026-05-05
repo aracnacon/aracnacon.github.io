@@ -850,7 +850,8 @@
       const PRODUCTS = [
         { id:'p1', sku:'SKU-8801', name:'8-Leg Running Shoes', price:79.99,  icon:'fa-shoe-prints' },
         { id:'p2', sku:'SKU-8802', name:'Silk-Grip Dress Shoes', price:49.99,  icon:'fa-socks'  },
-        { id:'p3', sku:'SKU-8803', name:'8-Leg Rain Boots', price:129.99, icon:'fa-boot' },
+        { id:'p3', sku:'SKU-8803', name:'8-Leg Rain Boots', price:129.99, icon:'fa-boot',
+          pairSvg:`<svg viewBox="0 0 18 16" width="10" height="9" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="0" width="5" height="10" rx="2.5"/><path d="M0 9 H7 Q9 9 9 11 V13 Q9 14 8 14 H0 V9Z"/><rect x="0" y="14" width="9" height="2" rx="1"/><rect x="9.5" y="0" width="5" height="10" rx="2.5"/><path d="M9 9 H16 Q18 9 18 11 V13 Q18 14 17 14 H9 V9Z"/><rect x="9" y="14" width="9" height="2" rx="1"/></svg>` },
       ];
 
       let cart = [], running = false, timers = [];
@@ -1189,8 +1190,8 @@
         el.innerHTML = PRODUCTS.map(p => `
           <div class="cs-product">
             ${['p1','p2','p3'].includes(p.id)
-              ? p.id==='p3'
-                ? `<span class="cs-prod-icon" style="display:inline-block;width:28px;height:28px;background-color:var(--color-primary);-webkit-mask:url('images/icons/download.jpeg') center/contain no-repeat;mask:url('images/icons/download.jpeg') center/contain no-repeat;-webkit-mask-mode:luminance;mask-mode:luminance;filter:invert(1);"></span>`
+              ? p.pairSvg
+                ? `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:22px;gap:1px;color:var(--color-primary)">${Array(4).fill(p.pairSvg).join('')}</span>`
                 : `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:22px;gap:1px;color:var(--color-primary);font-size:0.55em">${Array(4).fill(`<i class="fa-solid ${p.icon}"></i>`).join('')}</span>`
               : p.svg
               ? `<span class="cs-prod-icon" style="display:inline-flex;align-items:center;color:var(--color-primary)">${p.svg}</span>`
