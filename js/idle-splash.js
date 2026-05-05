@@ -318,6 +318,7 @@
     }
 
     splash.addEventListener('click', dissolve);
+    splash.addEventListener('touchend', dissolve, { passive: true });
   }
 
   // ── Idle timer management ─────────────────────────────────────────
