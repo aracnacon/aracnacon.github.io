@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    /* 5-theme neon cycle: Midnight, Ember, Forest, Arctic, Miami
+       Each theme holds for 17% then white pulse spike at 19% before switching.
+       Total duration: 20s (matches splash CYCLE=4000ms × 5 themes). */
+    @keyframes body-neon {
+      0%          { fill: #1e90ff; }
+      17%         { fill: #1e90ff; }
+      19%         { fill: #ffffff; }
+      20%         { fill: #e8651a; }
+      37%         { fill: #e8651a; }
+      39%         { fill: #ffffff; }
+      40%         { fill: #39ff14; }
+      57%         { fill: #39ff14; }
+      59%         { fill: #ffffff; }
+      60%         { fill: #f0f8ff; }
+      77%         { fill: #f0f8ff; }
+      79%         { fill: #ffffff; }
+      80%         { fill: #00e5ff; }
+      97%         { fill: #00e5ff; }
+      99%         { fill: #ffffff; }
+      100%        { fill: #1e90ff; }
+    }
+    @keyframes leg-neon {
+      0%          { stroke: #1e90ff; }
+      17%         { stroke: #1e90ff; }
+      19%         { stroke: #ffffff; }
+      20%         { stroke: #e8651a; }
+      37%         { stroke: #e8651a; }
+      39%         { stroke: #ffffff; }
+      40%         { stroke: #4caf50; }
+      57%         { stroke: #4caf50; }
+      59%         { stroke: #ffffff; }
+      60%         { stroke: #0077b6; }
+      77%         { stroke: #0077b6; }
+      79%         { stroke: #ffffff; }
+      80%         { stroke: #b026ff; }
+      97%         { stroke: #b026ff; }
+      99%         { stroke: #ffffff; }
+      100%        { stroke: #1e90ff; }
+    }
+    @keyframes glow-neon {
+      0%          { stroke: #1e90ff; }
+      17%         { stroke: #1e90ff; }
+      19%         { stroke: #ffffff; }
+      20%         { stroke: #e8651a; }
+      37%         { stroke: #e8651a; }
+      39%         { stroke: #ffffff; }
+      40%         { stroke: #39ff14; }
+      57%         { stroke: #39ff14; }
+      59%         { stroke: #ffffff; }
+      60%         { stroke: #0077b6; }
+      77%         { stroke: #0077b6; }
+      79%         { stroke: #ffffff; }
+      80%         { stroke: #ff2d95; }
+      97%         { stroke: #ff2d95; }
+      99%         { stroke: #ffffff; }
+      100%        { stroke: #1e90ff; }
+    }
+    @keyframes circuit-breathe {
+      from { opacity: 0.4; }
+      to   { opacity: 1.0; }
+    }
+    .body-fill {
+      animation: body-neon 20s linear infinite;
+    }
+    .leg-stroke {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 3;
+      animation: leg-neon 20s linear infinite;
+    }
+    .circuit-outline {
+      fill: none;
+      stroke-width: 2;
+      animation:
+        glow-neon 20s linear infinite,
+        circuit-breathe 1.2s ease-in-out infinite alternate;
+    }
+    .eye { fill: #ffffff; opacity: 0.95; }
+  </style>
+
+  <!-- Black background -->
+  <rect width="100" height="100" fill="#000"/>
+
+  <!-- ── Legs (left side) ─────────────────────────────────── -->
+  <!-- Upper-left 1 -->
+  <path class="leg-stroke" d="M42 38 Q32 28 22 18"/>
+  <!-- Upper-left 2 -->
+  <path class="leg-stroke" d="M40 44 Q26 40 12 36"/>
+  <!-- Lower-left 1 -->
+  <path class="leg-stroke" d="M40 52 Q28 58 16 68"/>
+  <!-- Lower-left 2 -->
+  <path class="leg-stroke" d="M42 57 Q35 66 28 80"/>
+
+  <!-- ── Legs (right side) ────────────────────────────────── -->
+  <!-- Upper-right 1 -->
+  <path class="leg-stroke" d="M58 38 Q68 28 78 18"/>
+  <!-- Upper-right 2 -->
+  <path class="leg-stroke" d="M60 44 Q74 40 88 36"/>
+  <!-- Lower-right 1 -->
+  <path class="leg-stroke" d="M60 52 Q72 58 84 68"/>
+  <!-- Lower-right 2 -->
+  <path class="leg-stroke" d="M58 57 Q65 66 72 80"/>
+
+  <!-- ── Cephalothorax (head/thorax) ───────────────────────── -->
+  <ellipse class="body-fill" cx="50" cy="40" rx="11" ry="10"/>
+  <!-- Circuit glow outline on cephalothorax -->
+  <ellipse class="circuit-outline" cx="50" cy="40" rx="11" ry="10"/>
+
+  <!-- ── Abdomen ───────────────────────────────────────────── -->
+  <ellipse class="body-fill" cx="50" cy="62" rx="15" ry="20"/>
+  <!-- Circuit glow outline on abdomen -->
+  <ellipse class="circuit-outline" cx="50" cy="62" rx="15" ry="20"/>
+
+  <!-- ── Eyes ─────────────────────────────────────────────── -->
+  <circle class="eye" cx="46" cy="38" r="1.8"/>
+  <circle class="eye" cx="54" cy="38" r="1.8"/>
+</svg>
