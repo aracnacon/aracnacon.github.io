@@ -117,8 +117,13 @@
       .cs-err-label {
         display: flex; align-items: center; gap: 6px;
         font-size: 0.7rem; color: var(--color-secondary); cursor: pointer;
+        line-height: 1;
       }
-      .cs-err-label input { cursor: pointer; accent-color: #e74c3c; }
+      .cs-err-label input {
+        cursor: pointer; accent-color: #e74c3c;
+        margin: 0; flex-shrink: 0;
+        vertical-align: middle; position: relative; top: -1px;
+      }
       .cs-watch-btn {
         width: 100%; padding: 7px 12px;
         background: var(--color-primary);
