@@ -148,6 +148,67 @@
         100% { box-shadow: 0 0 6px 1px rgba(231, 76, 60, 0.4); }
       }
 
+      /* Expand / modal */
+      .cs-expand-btn {
+        background: none; border: none; cursor: pointer;
+        color: var(--color-secondary); font-size: 0.72rem;
+        padding: 1px 5px; border-radius: 3px; line-height: 1;
+        transition: color 0.15s, background 0.15s;
+      }
+      .cs-expand-btn:hover { color: var(--color-text); background: rgba(var(--color-primary-rgb),0.1); }
+
+      .cs-modal-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.72);
+        z-index: 9998;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        backdrop-filter: blur(2px);
+      }
+      .cs-modal-overlay.cs-modal-open { display: flex; }
+      .cs-modal-box {
+        background: var(--bg-surface-solid);
+        border: 1px solid rgba(var(--color-primary-rgb), 0.35);
+        border-radius: var(--border-radius);
+        width: 100%; max-width: 860px;
+        max-height: 82vh;
+        display: flex; flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+        animation: cs-modal-in 0.18s ease;
+      }
+      @keyframes cs-modal-in {
+        from { opacity:0; transform:scale(0.97) translateY(6px); }
+        to   { opacity:1; transform:none; }
+      }
+      .cs-modal-hdr {
+        padding: 10px 14px;
+        background: rgba(var(--color-primary-rgb), 0.07);
+        border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.2);
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 0.65rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        color: var(--color-secondary);
+        flex-shrink: 0;
+      }
+      .cs-modal-hdr-left { display: flex; align-items: center; gap: 10px; }
+      .cs-modal-close {
+        background: none; border: none; cursor: pointer;
+        color: var(--color-secondary); font-size: 0.9rem;
+        padding: 2px 6px; border-radius: 3px;
+        transition: color 0.15s, background 0.15s;
+      }
+      .cs-modal-close:hover { color: var(--color-text); background: rgba(var(--color-primary-rgb),0.1); }
+      .cs-modal-body {
+        flex: 1; overflow-y: auto;
+        font-family: monospace; font-size: 0.78rem;
+      }
+      /* Trace modal rows inherit the same span-row styles but bigger */
+      .cs-modal-body .cs-span-row { grid-template-columns: 260px 1fr; min-height: 30px; }
+      .cs-modal-body .cs-log-line { padding: 2px 16px; font-size: 0.76rem; }
+
       /* Autonomous cursor */
       .cs-cursor {
         position: fixed; top: 0; left: 0;
@@ -612,7 +673,10 @@
             <div class="cs-panel">
               <div class="cs-panel-hdr">
                 <span>ACTIVE TRACE</span>
-                <span id="cs-trace-status" class="cs-status-idle">idle</span>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <span id="cs-trace-status" class="cs-status-idle">idle</span>
+                  <button class="cs-expand-btn" data-modal="trace" title="Expand"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
               </div>
               <div id="cs-trace-area" class="cs-trace-area">
                 <div class="cs-idle-msg">Waiting for request&hellip;</div>
@@ -622,10 +686,27 @@
             <div class="cs-panel">
               <div class="cs-panel-hdr">
                 <span>LOG STREAM</span>
-                <button class="cs-clear-btn" id="cs-clear-logs">Clear</button>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <button class="cs-clear-btn" id="cs-clear-logs">Clear</button>
+                  <button class="cs-expand-btn" data-modal="logs" title="Expand"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
               </div>
               <div id="cs-log-area" class="cs-log-area">
                 <div class="cs-idle-msg">No logs yet&hellip;</div>
+              </div>
+            </div>
+
+            <!-- Modal overlay -->
+            <div class="cs-modal-overlay" id="cs-modal-overlay">
+              <div class="cs-modal-box">
+                <div class="cs-modal-hdr">
+                  <div class="cs-modal-hdr-left">
+                    <span id="cs-modal-title">ACTIVE TRACE</span>
+                    <span id="cs-modal-status"></span>
+                  </div>
+                  <button class="cs-modal-close" id="cs-modal-close"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="cs-modal-body" id="cs-modal-body"></div>
               </div>
             </div>
 
@@ -1117,6 +1198,62 @@
         if (demoActive) { stopWatchDemo(); return; }
         if (running) return;
         runWatchDemo();
+      });
+
+      /* ── Panel modals ───────────────────────────────────────────── */
+      let modalType = null;
+      let modalSync = null;
+
+      function openPanelModal(type) {
+        modalType = type;
+        const overlay  = document.getElementById('cs-modal-overlay');
+        const title    = document.getElementById('cs-modal-title');
+        const statusEl = document.getElementById('cs-modal-status');
+        title.textContent = type === 'trace' ? 'ACTIVE TRACE' : 'LOG STREAM';
+        overlay.classList.add('cs-modal-open');
+        syncModalContent();
+
+        // Mirror status badge for trace modal
+        if (type === 'trace') {
+          const src = document.getElementById('cs-trace-status');
+          statusEl.textContent  = src.textContent;
+          statusEl.className    = src.className;
+        } else {
+          statusEl.textContent = '';
+          statusEl.className   = '';
+        }
+
+        // Live-sync while simulation is running
+        modalSync = setInterval(() => {
+          if (!document.getElementById('cs-modal-overlay').classList.contains('cs-modal-open')) return;
+          syncModalContent();
+          if (type === 'trace') {
+            const src = document.getElementById('cs-trace-status');
+            statusEl.textContent = src.textContent;
+            statusEl.className   = src.className;
+          }
+        }, 120);
+      }
+
+      function syncModalContent() {
+        const srcId = modalType === 'trace' ? 'cs-trace-area' : 'cs-log-area';
+        const body  = document.getElementById('cs-modal-body');
+        body.innerHTML = document.getElementById(srcId).innerHTML;
+        if (modalType === 'logs') body.scrollTop = body.scrollHeight;
+      }
+
+      function closePanelModal() {
+        document.getElementById('cs-modal-overlay').classList.remove('cs-modal-open');
+        clearInterval(modalSync);
+        modalType = null;
+      }
+
+      document.querySelectorAll('.cs-expand-btn').forEach(btn => {
+        btn.addEventListener('click', () => openPanelModal(btn.dataset.modal));
+      });
+      document.getElementById('cs-modal-close').addEventListener('click', closePanelModal);
+      document.getElementById('cs-modal-overlay').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closePanelModal();
       });
     })();
     </script>
