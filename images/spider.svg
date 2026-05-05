@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Silk thread -->
+  <line x1="256" y1="0" x2="256" y2="140" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+  <!-- Left legs -->
+  <!-- L1 -->
+  <path d="M230 210 Q180 175 155 155 Q130 135 80 90" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- L2 -->
+  <path d="M225 225 Q170 215 140 210 Q110 205 40 185" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- L3 -->
+  <path d="M225 245 Q175 260 145 275 Q115 290 50 330" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- L4 -->
+  <path d="M230 260 Q195 290 175 315 Q155 340 110 400" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- Right legs -->
+  <!-- R1 -->
+  <path d="M282 210 Q332 175 357 155 Q382 135 432 90" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- R2 -->
+  <path d="M287 225 Q342 215 372 210 Q402 205 472 185" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- R3 -->
+  <path d="M287 245 Q337 260 367 275 Q397 290 462 330" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- R4 -->
+  <path d="M282 260 Q317 290 337 315 Q357 340 402 400" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- Cephalothorax -->
+  <ellipse cx="256" cy="205" rx="34" ry="30" fill="#1a1a1a" stroke="#e8e8e8" stroke-width="2"/>
+
+  <!-- Eyes -->
+  <circle cx="243" cy="198" r="5" fill="#ff2233">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="269" cy="198" r="5" fill="#ff2233">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="233" cy="203" r="3.5" fill="#ff2233" opacity="0.5"/>
+  <circle cx="279" cy="203" r="3.5" fill="#ff2233" opacity="0.5"/>
+
+  <!-- Abdomen -->
+  <ellipse cx="256" cy="300" rx="52" ry="68" fill="#1a1a1a" stroke="#e8e8e8" stroke-width="2"/>
+</svg>
