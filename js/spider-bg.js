@@ -9,7 +9,7 @@
       width: 110px;
       height: 110px;
       z-index: 50;
-      opacity: 0.6;
+      opacity: 0.8;
       pointer-events: none;
       will-change: transform;
     }
@@ -42,11 +42,11 @@
 
     /* ── Electric body ── */
     .sb-circuit-glow {
-      animation: sb-breathe 2s ease-in-out infinite alternate;
+      animation: sb-breathe 1.2s ease-in-out infinite alternate;
     }
     @keyframes sb-breathe {
-      from { opacity: 0.2; }
-      to   { opacity: 0.7; }
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
     .sb-outer-bulb.sb-bulb-on {
       animation: sb-bulb 1.5s ease-out forwards;
@@ -87,17 +87,43 @@
   // ── Theme color ─────────────────────────────────────────────────
   const THEME_COLORS = {
     'theme-ember':  '#e8651a',
-    'theme-forest': '#1b5e20',
+    'theme-forest': '#4caf50',
     'theme-arctic': '#0077b6',
     'theme-miami':  '#ff2d95',
   };
 
   const CONTRAST_COLORS = {
-    'theme-ember':  '#ffd700',  // gold vs orange
+    'theme-ember':  '#ff1a1a',  // neon crimson (neon maroon bulb)
     'theme-forest': '#a5d6a7',  // light green outer
-    'theme-arctic': '#ffb300',  // amber vs dark blue
-    'theme-miami':  '#00e5ff',  // cyan vs pink
+    'theme-arctic': '#48a9d4',  // icy blue outer glow
+    'theme-miami':  '#b026ff',  // neon purple outer
   };
+
+  // Structural body fill (legs, outer shell)
+  const BODY_FILL_COLORS = {
+    'theme-ember':  '#e8651a',  // ember orange
+    'theme-forest': '#071a08',
+    'theme-arctic': '#f0f8ff',  // ice white
+    'theme-miami':  '#00e5ff',  // neon blue
+  };
+
+  // Inner circuit body fill (path17) — falls back to BODY_FILL_COLORS if not specified
+  const INNER_BODY_COLORS = {
+    'theme-ember':  '#3d0000',  // deep maroon
+  };
+
+  // Per-theme limb stroke color — falls back to THEME_COLORS if not specified
+  const LIMB_COLORS = {
+    'theme-miami':  '#b026ff',  // neon purple legs
+  };
+
+  function getBodyFillColor() {
+    const cls = document.documentElement.className;
+    for (const [key, color] of Object.entries(BODY_FILL_COLORS)) {
+      if (cls.includes(key)) return color;
+    }
+    return '#1e90ff'; // midnight default
+  }
 
   function getThemeColor() {
     const cls = document.documentElement.className;
@@ -112,27 +138,65 @@
     for (const [key, color] of Object.entries(CONTRAST_COLORS)) {
       if (cls.includes(key)) return color;
     }
-    return '#ffd700'; // gold vs midnight blue
+    return '#00cfff'; // bright electric blue bulb
   }
 
-  let glowEl = null, sparkEl = null, lastNeonColor = '';
+  function getInnerBodyColor() {
+    const cls = document.documentElement.className;
+    for (const [key, color] of Object.entries(INNER_BODY_COLORS)) {
+      if (cls.includes(key)) return color;
+    }
+    return getBodyFillColor();
+  }
+
+  function getLimbColor() {
+    const cls = document.documentElement.className;
+    for (const [key, color] of Object.entries(LIMB_COLORS)) {
+      if (cls.includes(key)) return color;
+    }
+    return getThemeColor();
+  }
+
+  let glowEl = null, sparkEl = null, innerEl = null;
+  let lastNeonColor = '', lastBodyFill = '', lastInnerFill = '';
+  let bodyEls = [];   // structural gray body parts (excludes path17)
+  let limbEls = [];   // limb path elements
   const neonStyle = document.createElement('style');
   document.head.appendChild(neonStyle);
 
   function applyNeonColor(color) {
-    const contrast = getContrastColor();
+    const contrast    = getContrastColor();
+    const bodyFill    = getBodyFillColor();
     neonStyle.textContent = `
-      .sb-circuit-glow { filter: drop-shadow(0 0 4px ${color}) drop-shadow(0 0 10px ${color}); }
-      .sb-spark { filter: drop-shadow(0 0 4px ${color}) drop-shadow(0 0 10px ${color}) drop-shadow(0 0 2px #fff); }
+      .sb-circuit-glow { filter: drop-shadow(0 0 6px ${color}) drop-shadow(0 0 16px ${color}) drop-shadow(0 0 30px ${color}); }
+      .sb-spark { filter: drop-shadow(0 0 6px ${color}) drop-shadow(0 0 16px ${color}) drop-shadow(0 0 4px #fff) drop-shadow(0 0 1px #fff); }
       @keyframes sb-bulb {
-        0%   { fill: #808080; filter: none; }
-        5%   { fill: #ffffff; filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 40px ${contrast}); }
-        30%  { fill: #fffde7; filter: drop-shadow(0 0 10px ${contrast}) drop-shadow(0 0 20px ${contrast}); }
-        100% { fill: #fff8e1; filter: drop-shadow(0 0 3px ${contrast}) drop-shadow(0 0 8px ${contrast}); }
+        0%   { fill: ${bodyFill}; filter: none; }
+        5%   { fill: #ffffff; filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px ${contrast}) drop-shadow(0 0 90px ${contrast}); }
+        30%  { fill: #fffde7; filter: drop-shadow(0 0 16px ${contrast}) drop-shadow(0 0 35px ${contrast}); }
+        100% { fill: #fff8e1; filter: drop-shadow(0 0 5px ${contrast}) drop-shadow(0 0 14px ${contrast}); }
       }
     `;
     if (glowEl) glowEl.style.stroke = color;
     if (sparkEl) sparkEl.style.stroke = color;
+    // Tint structural body parts
+    if (bodyFill !== lastBodyFill) {
+      bodyEls.forEach(e => { e.style.fill = bodyFill; });
+      lastBodyFill = bodyFill;
+    }
+    // Inner circuit body — separate color per theme
+    const innerFill = getInnerBodyColor();
+    if (innerFill !== lastInnerFill) {
+      if (innerEl) innerEl.style.fill = innerFill;
+      lastInnerFill = innerFill;
+    }
+    // Tint limb paths — use per-theme limb color if defined
+    const limbColor = getLimbColor();
+    limbEls.forEach(e => {
+      e.style.stroke = limbColor;
+      e.style.strokeWidth = '1.5';
+      e.style.fill = bodyFill;
+    });
     lastNeonColor = color;
   }
 
@@ -161,15 +225,30 @@
         svg.appendChild(g);
       });
 
+      // Collect structural gray body elements (fill:#808080) for theme tinting
+      // Exclude path17 (inner body — handled separately as dark circuit base)
+      svg.querySelectorAll('[style*="fill:#808080"]').forEach(e => {
+        if (e.id !== 'path17') bodyEls.push(e);
+      });
+
+      // Collect limb path elements (inside walk groups) for colored stroke
+      LIMBS.forEach(([, ids]) => {
+        ids.forEach(id => {
+          const p = svg.getElementById(id);
+          if (p) limbEls.push(p);
+        });
+      });
+
       // Electric inner body
       const inner = svg.getElementById('path17');
       if (inner) {
-        inner.style.fill = '#0d0d0d';
+        innerEl = inner;
+        inner.style.fill = getInnerBodyColor();
 
         const glow = inner.cloneNode(true);
         glow.removeAttribute('id');
         glow.setAttribute('fill', 'none');
-        glow.setAttribute('stroke-width', '3');
+        glow.setAttribute('stroke-width', '5');
         glow.classList.add('sb-circuit-glow');
         svg.appendChild(glow);
         glowEl = glow;
@@ -177,7 +256,7 @@
         const spark = inner.cloneNode(true);
         spark.removeAttribute('id');
         spark.setAttribute('fill', 'none');
-        spark.setAttribute('stroke-width', '2');
+        spark.setAttribute('stroke-width', '3');
         spark.classList.add('sb-spark');
         svg.appendChild(spark);
         sparkEl = spark;
@@ -191,8 +270,8 @@
 
         requestAnimationFrame(() => requestAnimationFrame(() => {
           const len   = spark.getTotalLength();
-          const pulse = len * 0.07;
-          const cycle = 1600;
+          const pulse = len * 0.12;
+          const cycle = 900;
 
           const st = document.createElement('style');
           st.textContent = `

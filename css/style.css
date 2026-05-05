@@ -292,6 +292,10 @@
 .theme-arctic nav a:hover {
   background: var(--color-primary);
   color: #fff;
+  box-shadow:
+    0 0 14px rgba(0, 119, 182, 0.7),
+    0 0 32px rgba(72, 169, 212, 0.35),
+    0 0 60px rgba(72, 169, 212, 0.15);
 }
 .theme-miami #video-bg-overlay   { background: rgba(13, 2, 33, 0.55); }
 
@@ -404,8 +408,78 @@ img:hover {
   box-shadow: var(--img-shadow-hover);
 }
 
+/* Midnight — electric circuit border */
+@property --midnight-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 header img {
-  animation: fadeInGrow 1s ease-out 0.3s both;
+  --midnight-angle: 0deg;
+  border: 5px solid transparent;
+  background-image: linear-gradient(var(--bg-base), var(--bg-base)),
+                    conic-gradient(from var(--midnight-angle),
+                      #0a1628, #1e90ff, #4da6ff, #90caf9,
+                      #c5e3ff, #4da6ff, #1a5c9e, #0a1628);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  z-index: 1;
+  position: relative;
+  animation: fadeInGrow 1s ease-out 0.3s both, midnight-spin 14s linear infinite, midnight-glow 3s ease-in-out infinite alternate;
+}
+
+/* Outer deep-blue halo */
+body:not(.page-projects) header::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 228px;
+  height: 228px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(77, 166, 255, 0.35) 0%,
+    rgba(30, 144, 255, 0.20) 45%,
+    transparent 72%);
+  filter: blur(12px);
+  animation: midnight-breathe 4s ease-in-out infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Inner electric circuit rays */
+body:not(.page-projects) header::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 216px;
+  height: 216px;
+  border-radius: 50%;
+  background: conic-gradient(from var(--midnight-angle),
+    transparent 65%, rgba(144, 202, 249, 0.45) 71%, rgba(197, 227, 255, 0.30) 77%, transparent 83%,
+    transparent 88%, rgba(77, 166, 255, 0.30) 93%, transparent 97%);
+  filter: blur(5px);
+  animation: midnight-spin 18s linear infinite reverse, midnight-breathe 2.5s ease-in-out infinite alternate-reverse;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes midnight-spin {
+  to { --midnight-angle: 360deg; }
+}
+
+@keyframes midnight-glow {
+  0%   { box-shadow: 0 0 8px rgba(30, 144, 255, 0.4), 0 0 20px rgba(30, 144, 255, 0.25); }
+  100% { box-shadow: 0 0 18px rgba(30, 144, 255, 0.7), 0 0 40px rgba(77, 166, 255, 0.45), 0 0 65px rgba(144, 202, 249, 0.2); }
+}
+
+@keyframes midnight-breathe {
+  0%   { transform: translateX(-50%) scale(0.94); opacity: 0.5; }
+  100% { transform: translateX(-50%) scale(1.08); opacity: 1; }
 }
 
 /* Ember — spinning fire border */
@@ -498,6 +572,228 @@ header img {
 @keyframes miami-pulse {
   0%, 100% { box-shadow: 0 0 12px rgba(255, 45, 149, 0.5), 0 0 25px rgba(0, 229, 255, 0.3); }
   50%      { box-shadow: 0 0 25px rgba(255, 45, 149, 0.8), 0 0 50px rgba(0, 229, 255, 0.5), 0 0 80px rgba(176, 38, 255, 0.3); }
+}
+
+/* Forest — dappled-light canopy border */
+@property --forest-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.theme-forest body:not(.page-projects) header {
+  position: relative;
+}
+
+.theme-forest header img {
+  --forest-angle: 0deg;
+  border: 5px solid transparent;
+  background-image: linear-gradient(var(--bg-base), var(--bg-base)),
+                    conic-gradient(from var(--forest-angle),
+                      #1b5e20, #4caf50, #81c784, #c8e6c9,
+                      #aed581, #66bb6a, #2e7d32, #1b5e20);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  z-index: 1;
+  position: relative;
+  animation: forest-spin 10s linear infinite, forest-glow 3s ease-in-out infinite alternate;
+}
+
+/* Outer canopy atmosphere — large soft green halo */
+.theme-forest body:not(.page-projects) header::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 228px;
+  height: 228px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(102, 187, 106, 0.35) 0%,
+    rgba(46, 125, 50, 0.25) 45%,
+    transparent 72%);
+  filter: blur(12px);
+  animation: forest-breathe 4s ease-in-out infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Inner dappled-light wisps — rotating conic rays */
+.theme-forest body:not(.page-projects) header::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 216px;
+  height: 216px;
+  border-radius: 50%;
+  background: conic-gradient(from var(--forest-angle),
+    transparent 70%, rgba(174, 213, 129, 0.45) 76%, transparent 82%,
+    transparent 88%, rgba(200, 230, 201, 0.30) 92%, transparent 96%);
+  filter: blur(5px);
+  animation: forest-spin 16s linear infinite reverse, forest-breathe 2.5s ease-in-out infinite alternate-reverse;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes forest-spin {
+  to { --forest-angle: 360deg; }
+}
+
+@keyframes forest-glow {
+  0%   { box-shadow: 0 0 8px rgba(76, 175, 80, 0.4), 0 0 20px rgba(46, 125, 50, 0.25); }
+  100% { box-shadow: 0 0 18px rgba(76, 175, 80, 0.7), 0 0 40px rgba(46, 125, 50, 0.45), 0 0 65px rgba(129, 199, 132, 0.2); }
+}
+
+@keyframes forest-breathe {
+  0%   { transform: translateX(-50%) scale(0.94); opacity: 0.5; }
+  100% { transform: translateX(-50%) scale(1.08); opacity: 1; }
+}
+
+/* Arctic — ice crystal border */
+@property --arctic-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.theme-arctic body:not(.page-projects) header {
+  position: relative;
+}
+
+.theme-arctic header img {
+  --arctic-angle: 0deg;
+  border: 5px solid transparent;
+  background-image: linear-gradient(var(--bg-surface-solid), var(--bg-surface-solid)),
+                    conic-gradient(from var(--arctic-angle),
+                      #023e8a, #0077b6, #48a9d4, #90caf9,
+                      #e3f2fd, #90caf9, #48a9d4, #023e8a);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  z-index: 1;
+  position: relative;
+  animation: arctic-spin 12s linear infinite, arctic-shimmer 3.5s ease-in-out infinite alternate;
+}
+
+/* Outer ice-glow halo */
+.theme-arctic body:not(.page-projects) header::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 228px;
+  height: 228px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(72, 169, 212, 0.35) 0%,
+    rgba(0, 119, 182, 0.20) 45%,
+    transparent 72%);
+  filter: blur(12px);
+  animation: arctic-breathe 4s ease-in-out infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Inner aurora rays */
+.theme-arctic body:not(.page-projects) header::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 216px;
+  height: 216px;
+  border-radius: 50%;
+  background: conic-gradient(from var(--arctic-angle),
+    transparent 55%, rgba(144, 202, 249, 0.45) 61%, rgba(227, 242, 253, 0.30) 67%, transparent 73%,
+    transparent 82%, rgba(72, 169, 212, 0.30) 87%, transparent 93%);
+  filter: blur(5px);
+  animation: arctic-spin 20s linear infinite reverse, arctic-breathe 3s ease-in-out infinite alternate-reverse;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes arctic-spin {
+  to { --arctic-angle: 360deg; }
+}
+
+@keyframes arctic-shimmer {
+  0%   { box-shadow: 0 0 8px rgba(72, 169, 212, 0.4), 0 0 20px rgba(0, 119, 182, 0.25); }
+  100% { box-shadow: 0 0 18px rgba(72, 169, 212, 0.75), 0 0 40px rgba(0, 119, 182, 0.45), 0 0 65px rgba(144, 202, 249, 0.2); }
+}
+
+@keyframes arctic-breathe {
+  0%   { transform: translateX(-50%) scale(0.94); opacity: 0.45; }
+  100% { transform: translateX(-50%) scale(1.08); opacity: 1; }
+}
+
+/* Miami — neon halo */
+@property --miami-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.theme-miami body:not(.page-projects) header {
+  position: relative;
+}
+
+/* Outer neon halo — full-ring pink/purple/cyan wash */
+.theme-miami body:not(.page-projects) header::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 232px;
+  height: 232px;
+  border-radius: 50%;
+  background: conic-gradient(from var(--miami-angle),
+    rgba(255, 45, 149, 0.55), rgba(176, 38, 255, 0.45),
+    rgba(0, 229, 255, 0.40), rgba(255, 45, 149, 0.55));
+  filter: blur(14px);
+  animation: miami-halo-spin 6s linear infinite, miami-halo-breathe 1.8s ease-in-out infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Inner neon wisps — sparse pink + cyan beams counter-rotating */
+.theme-miami body:not(.page-projects) header::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 216px;
+  height: 216px;
+  border-radius: 50%;
+  background: conic-gradient(from var(--miami-angle),
+    transparent 55%, rgba(255, 45, 149, 0.70) 61%, transparent 68%,
+    transparent 75%, rgba(0, 229, 255, 0.60) 81%, transparent 88%);
+  filter: blur(4px);
+  animation: miami-halo-spin 9s linear infinite reverse, miami-halo-breathe 1.4s ease-in-out infinite alternate-reverse;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes miami-halo-spin {
+  to { --miami-angle: 360deg; }
+}
+
+@keyframes miami-halo-breathe {
+  0%   { transform: translateX(-50%) scale(0.92); opacity: 0.6; }
+  100% { transform: translateX(-50%) scale(1.10); opacity: 1; }
+}
+
+/* Miami nav hover — dual pink + cyan glow */
+.theme-miami nav a:hover {
+  box-shadow:
+    0 0 14px rgba(255, 45, 149, 0.85),
+    0 0 32px rgba(0, 229, 255, 0.50),
+    0 0 60px rgba(176, 38, 255, 0.30);
 }
 
 nav {
@@ -840,6 +1136,7 @@ header, main, nav, footer {
 header {
   margin-bottom: 10px;
   text-align: center;
+  position: relative;
 }
 
 header p {
