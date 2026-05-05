@@ -850,7 +850,7 @@
       const PRODUCTS = [
         { id:'p1', sku:'SKU-8801', name:'8-Leg Running Shoes', price:79.99,  icon:'fa-shoe-prints' },
         { id:'p2', sku:'SKU-8802', name:'Silk-Grip Dress Shoes', price:49.99,  icon:'fa-socks'  },
-        { id:'p3', sku:'SKU-8803', name:'8-Leg Rain Boots', price:129.99, icon:'fa-boot', pairEmoji:'🥾' },
+        { id:'p3', sku:'SKU-8803', name:'8-Leg Rain Boots', price:129.99, icon:'fa-boot' },
       ];
 
       let cart = [], running = false, timers = [];
@@ -1189,8 +1189,8 @@
         el.innerHTML = PRODUCTS.map(p => `
           <div class="cs-product">
             ${['p1','p2','p3'].includes(p.id)
-              ? p.pairEmoji
-                ? `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:26px;gap:1px;font-size:0.7em;line-height:1">${Array(8).fill(p.pairEmoji).join('')}</span>`
+              ? p.id==='p3'
+                ? `<span class="cs-prod-icon" style="display:inline-block;width:28px;height:28px;background-color:var(--color-primary);-webkit-mask:url('images/icons/download.jpeg') center/contain no-repeat;mask:url('images/icons/download.jpeg') center/contain no-repeat;-webkit-mask-mode:luminance;mask-mode:luminance;filter:invert(1);"></span>`
                 : `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:22px;gap:1px;color:var(--color-primary);font-size:0.55em">${Array(4).fill(`<i class="fa-solid ${p.icon}"></i>`).join('')}</span>`
               : p.svg
               ? `<span class="cs-prod-icon" style="display:inline-flex;align-items:center;color:var(--color-primary)">${p.svg}</span>`
