@@ -228,8 +228,8 @@
   <h1>SPIDER FIRE FIGHTER</h1>
   <p class="subtitle">SURVIVAL PROTOCOL</p>
   <ul>
-    <li>Move your mouse to guide the spider</li>
-    <li>Click anywhere to shoot a laser bolt</li>
+    <li>Move your mouse or drag to guide the spider</li>
+    <li>Click or tap anywhere to shoot a laser bolt</li>
     <li>Walk over fires to stomp them out</li>
     <li>Dodge the falling Matrix code rain</li>
     <li>Game over if 8 fires burn at once</li>
@@ -407,11 +407,27 @@
       }
     });
 
-  // ── Spider movement (follows mouse) ─────────────────────────────
+  // ── Spider movement (follows mouse or touch) ────────────────────
   document.addEventListener('mousemove', e => {
     mouseX = e.clientX;
     mouseY = e.clientY;
   });
+
+  document.addEventListener('touchmove', e => {
+    e.preventDefault();
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+  }, { passive: false });
+
+  document.addEventListener('touchstart', e => {
+    e.preventDefault();
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+    if (gameStarted) {
+      initAudio();
+      shootLaser(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: false });
 
   function setTransform(nx, ny, deg) {
     x = nx; y = ny; angle = deg;
