@@ -1185,12 +1185,16 @@
         const el = document.getElementById('cs-products');
         el.innerHTML = PRODUCTS.map(p => `
           <div class="cs-product">
-            ${p.svg ? `<span class="cs-prod-icon" style="display:inline-flex;align-items:center;color:var(--color-primary)">${p.svg}</span>` : `<i class="fa-solid ${p.icon} cs-prod-icon"></i>`}
+            ${p.id==='p1'
+              ? `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:22px;gap:1px;color:var(--color-primary);font-size:0.55em"><i class="fa-solid fa-shoe-prints"></i><i class="fa-solid fa-shoe-prints"></i><i class="fa-solid fa-shoe-prints"></i><i class="fa-solid fa-shoe-prints"></i></span>`
+              : p.id==='p2'
+              ? `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:22px;gap:1px;color:var(--color-primary);font-size:0.55em"><i class="fa-solid fa-socks"></i><i class="fa-solid fa-socks"></i><i class="fa-solid fa-socks"></i><i class="fa-solid fa-socks"></i></span>`
+              : p.svg
+              ? `<span class="cs-prod-icon" style="display:inline-flex;align-items:center;color:var(--color-primary)">${p.svg}</span>`
+              : `<i class="fa-solid ${p.icon} cs-prod-icon"></i>`}
             <div class="cs-prod-info">
               <div class="cs-prod-name">${p.name}</div>
               <div class="cs-prod-price">$${p.price.toFixed(2)}</div>
-              ${p.id==='p1'?'<div style="color:var(--color-primary);font-size:0.75em;margin-top:2px;letter-spacing:0.1em"><i class="fa-solid fa-shoe-prints"></i> <i class="fa-solid fa-shoe-prints"></i> <i class="fa-solid fa-shoe-prints"></i> <i class="fa-solid fa-shoe-prints"></i></div>':''}
-              ${p.id==='p2'?'<div style="color:var(--color-primary);font-size:0.75em;margin-top:2px;letter-spacing:0.1em"><i class="fa-solid fa-socks"></i> <i class="fa-solid fa-socks"></i> <i class="fa-solid fa-socks"></i> <i class="fa-solid fa-socks"></i></div>':''}
             </div>
             <button class="cs-add-btn" data-id="${p.id}" data-autodemo="add-${p.id}" ${running?'disabled':''}>
               <i class="fa-solid fa-plus"></i>
