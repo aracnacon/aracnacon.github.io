@@ -702,6 +702,10 @@
                   <input type="checkbox" id="cs-badcode-mode">
                   Simulate bad code
                 </label>
+                <label class="cs-err-label">
+                  <input type="checkbox" id="cs-highlat-mode">
+                  Simulate high latency
+                </label>
               </div>
               <button id="cs-watch-btn" class="cs-watch-btn">
                 <i class="fa-solid fa-circle-play"></i> Watch Demo
@@ -859,7 +863,7 @@
       let traceScale = 342; // default; updated when root completes
 
       /* ── event schedule builder ── */
-      function buildEvents(cart, isErr, isBadCode) {
+      function buildEvents(cart, isErr, isBadCode, isHighLat) {
         const total = cart.reduce((s,p) => s + p.price * (p.qty||1), 0).toFixed(2);
         const skus  = cart.map(p => "'" + p.sku + "'").join(', ');
         const ordId = 'ord_' + (Math.floor(Math.random()*9000)+1000);
@@ -869,6 +873,35 @@
           ({ type:'ss', id, par, svc, op, end, err, note });
         const se = (id, at) => ({ type:'se', id, at });
         const lg = (at, lvl, svc, msg) => ({ type:'lg', at, lvl, svc, msg });
+
+        if (isHighLat) {
+          return [
+            { at:0,   ...lg(0,   'INFO',  'api-gateway', `POST /checkout received — ${cart.length} pair(s), $${total}`) },
+            { at:0,   ...ss('r',  null,  'api-gateway', 'POST /checkout',       850, false) },
+            { at:8,   ...lg(8,   'DEBUG','auth-svc',    `Validating Bearer token for ${uid}`) },
+            { at:8,   ...ss('a', 'r',    'auth-svc',   'ValidateToken',          53, false) },
+            { at:53,  type:'se', id:'a' },
+            { at:53,  ...lg(53,  'DEBUG','auth-svc',    `Token valid — ${uid} authenticated`) },
+            { at:62,  ...lg(62,  'WARN', 'order-svc',   'Starting order — DB response times elevated') },
+            { at:62,  ...ss('o', 'r',    'order-svc',  'CreateOrder',           820, false) },
+            { at:70,  ...lg(70,  'WARN', 'db',          `SELECT inventory WHERE sku IN (${skus}) — no index on sku, full table scan`) },
+            { at:70,  ...ss('d1','o',    'db',         'SELECT inventory (full scan)', 480, false) },
+            { at:480, type:'se', id:'d1' },
+            { at:480, ...lg(480, 'WARN', 'db',          'Full table scan completed in 410ms — recommend: CREATE INDEX idx_sku ON inventory(sku)') },
+            { at:490, ...lg(490, 'DEBUG','db',          `INSERT INTO orders VALUES ('${uid}', ${total}, 'pending')`) },
+            { at:490, ...ss('d2','o',    'db',         'INSERT orders',          810, false) },
+            { at:810, type:'se', id:'d2' },
+            { at:810, ...lg(810, 'INFO', 'order-svc',   `Order created: ${ordId}`) },
+            { at:815, ...ss('c', 'o',    'cache',      `SET order:${ordId.slice(-4)}`, 825, false) },
+            { at:825, type:'se', id:'c' },
+            { at:820, type:'se', id:'o' },
+            { at:828, ...lg(828, 'INFO', 'notify-svc',  'Sending order confirmation to us***@example.com') },
+            { at:828, ...ss('n', 'r',    'notify-svc', 'SendEmail',              850, false) },
+            { at:850, type:'se', id:'n' },
+            { at:850, type:'se', id:'r' },
+            { at:850, ...lg(850, 'WARN', 'api-gateway', `POST /checkout 200 OK — 850ms — ${ordId} [SLOW — latency SLO threshold: 300ms]`) },
+          ];
+        }
 
         if (isBadCode) {
           return [
@@ -1264,9 +1297,10 @@
       }
 
       /* ── simulation runner ── */
-      function runSim(isErr, isBadCode) {
+      function runSim(isErr, isBadCode, isHighLat) {
         running = true;
-        liveSpans = {}; spanOrder = []; traceScale = isBadCode ? 78 : (isErr ? 112 : 342);
+        liveSpans = {}; spanOrder = [];
+        traceScale = isBadCode ? 78 : (isErr ? 112 : (isHighLat ? 850 : 342));
         timers.forEach(clearTimeout); timers = [];
 
         const btn = document.getElementById('cs-checkout-btn');
@@ -1280,7 +1314,7 @@
         document.getElementById('cs-trace-area').innerHTML =
           '<div class="cs-idle-msg">Initializing trace&hellip;</div>';
 
-        const events = buildEvents(cart, isErr, isBadCode);
+        const events = buildEvents(cart, isErr, isBadCode, isHighLat);
 
         events.forEach(evt => {
           const t = setTimeout(() => {
@@ -1304,7 +1338,7 @@
                   totalReq++;
                   if (liveSpans[evt.id].err) totalErr++;
                   updateMetrics();
-                  finishSim(liveSpans[evt.id].err, isBadCode);
+                  finishSim(liveSpans[evt.id].err, isBadCode, isHighLat);
                 }
               }
               renderTraceArea();
@@ -1314,7 +1348,7 @@
         });
       }
 
-      function finishSim(isErr, isBadCode) {
+      function finishSim(isErr, isBadCode, isHighLat) {
         requestHistory.push({ ok: !isErr, latency: lastLat || 0 });
         updateSLO();
         updateLatencySLO();
@@ -1330,6 +1364,10 @@
           btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Failed — Try Again';
           btn.style.color = '#e74c3c'; btn.style.borderColor = '#e74c3c';
           statusEl.textContent = '✕ error'; statusEl.className = 'cs-status-error';
+        } else if (isHighLat) {
+          btn.innerHTML = '<i class="fa-solid fa-clock"></i> Order Placed (slow)';
+          btn.style.color = '#f39c12'; btn.style.borderColor = '#f39c12';
+          statusEl.textContent = '⚠ slow'; statusEl.className = 'cs-status-running';
         } else {
           btn.innerHTML = '<i class="fa-solid fa-check"></i> Order Placed!';
           btn.style.color = '#2ecc71'; btn.style.borderColor = '#2ecc71';
@@ -1354,9 +1392,10 @@
 
       document.getElementById('cs-checkout-btn').addEventListener('click', () => {
         if (running || !cart.length) return;
-        const isBadCode = document.getElementById('cs-badcode-mode').checked;
-        const isErr     = !isBadCode && document.getElementById('cs-error-mode').checked;
-        runSim(isErr, isBadCode);
+        const isBadCode  = document.getElementById('cs-badcode-mode').checked;
+        const isErr      = !isBadCode && document.getElementById('cs-error-mode').checked;
+        const isHighLat  = !isBadCode && !isErr && document.getElementById('cs-highlat-mode').checked;
+        runSim(isErr, isBadCode, isHighLat);
       });
       document.getElementById('cs-clear-logs').addEventListener('click', () => {
         document.getElementById('cs-log-area').innerHTML =
