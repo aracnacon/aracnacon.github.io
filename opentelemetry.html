@@ -693,6 +693,20 @@
               <button id="cs-checkout-btn" class="cs-checkout-btn" data-autodemo="checkout" disabled>
                 <i class="fa-solid fa-credit-card"></i> Checkout
               </button>
+              <div style="display:flex;gap:8px;flex-direction:column;">
+                <label class="cs-err-label">
+                  <input type="checkbox" id="cs-error-mode">
+                  Simulate stock error
+                </label>
+                <label class="cs-err-label">
+                  <input type="checkbox" id="cs-badcode-mode">
+                  Simulate bad code
+                </label>
+              </div>
+              <button id="cs-watch-btn" class="cs-watch-btn">
+                <i class="fa-solid fa-circle-play"></i> Watch Demo
+                <span class="nav-try-me nav-try-me-spider" style="color:var(--bg-base,#0a0a0a);opacity:0.75;">Try Me!</span>
+              </button>
             </div>
           </div>
 
@@ -768,21 +782,6 @@
                 </div>
                 <div class="cs-modal-body" id="cs-modal-body"></div>
               </div>
-            </div>
-
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-              <label class="cs-err-label" style="flex-shrink:0;">
-                <input type="checkbox" id="cs-error-mode">
-                Simulate stock error
-              </label>
-              <label class="cs-err-label" style="flex-shrink:0;">
-                <input type="checkbox" id="cs-badcode-mode">
-                Simulate bad code
-              </label>
-              <button id="cs-watch-btn" class="cs-watch-btn" style="flex:1;min-width:140px;">
-                <i class="fa-solid fa-circle-play"></i> Watch Demo
-                <span class="nav-try-me nav-try-me-spider" style="color:var(--bg-base,#0a0a0a);opacity:0.75;">Try Me!</span>
-              </button>
             </div>
 
           </div>
