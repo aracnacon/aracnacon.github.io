@@ -618,6 +618,10 @@
                 <input type="checkbox" id="cs-error-mode">
                 Simulate stock error
               </label>
+              <label class="cs-err-label" style="flex-shrink:0;">
+                <input type="checkbox" id="cs-badcode-mode">
+                Simulate bad code
+              </label>
               <button id="cs-watch-btn" class="cs-watch-btn" style="flex:1;min-width:140px;">
                 <i class="fa-solid fa-circle-play"></i> Watch Demo
                 <span class="nav-try-me nav-try-me-spider" style="color:var(--color-primary);">Try Me!</span>
@@ -669,7 +673,7 @@
       let traceScale = 342; // default; updated when root completes
 
       /* ── event schedule builder ── */
-      function buildEvents(cart, isErr) {
+      function buildEvents(cart, isErr, isBadCode) {
         const total = cart.reduce((s,p) => s + p.price * (p.qty||1), 0).toFixed(2);
         const skus  = cart.map(p => "'" + p.sku + "'").join(', ');
         const ordId = 'ord_' + (Math.floor(Math.random()*9000)+1000);
@@ -679,6 +683,26 @@
           ({ type:'ss', id, par, svc, op, end, err, note });
         const se = (id, at) => ({ type:'se', id, at });
         const lg = (at, lvl, svc, msg) => ({ type:'lg', at, lvl, svc, msg });
+
+        if (isBadCode) {
+          return [
+            { at:0,  ...lg(0,  'INFO',  'api-gateway', `POST /checkout received — ${cart.length} item(s), $${total}`) },
+            { at:0,  ...ss('r', null,   'api-gateway', 'POST /checkout',  78, true) },
+            { at:8,  ...lg(8,  'DEBUG', 'auth-svc',    `Validating Bearer token for ${uid}`) },
+            { at:8,  ...ss('a', 'r',    'auth-svc',   'ValidateToken',    53, false) },
+            { at:53, type:'se', id:'a' },
+            { at:53, ...lg(53, 'DEBUG', 'auth-svc',    'Token valid — user authenticated') },
+            { at:62, ...lg(62, 'INFO',  'order-svc',   `Creating order — ${cart.length} item(s), $${total}`) },
+            { at:62, ...ss('o', 'r',    'order-svc',  'CreateOrder',      78, true) },
+            { at:70, ...lg(70, 'ERROR', 'order-svc',   'NullPointerException: Cannot invoke getPrice() on null object ref') },
+            { at:71, ...lg(71, 'ERROR', 'order-svc',   '  at OrderService.calculateTotal(OrderService.java:142)') },
+            { at:72, ...lg(72, 'ERROR', 'order-svc',   '  at OrderController.checkout(OrderController.java:89)') },
+            { at:73, ...lg(73, 'ERROR', 'order-svc',   '  at HttpDispatcher.handle(HttpDispatcher.java:34)') },
+            { at:75, type:'se', id:'o' },
+            { at:78, type:'se', id:'r' },
+            { at:78, ...lg(78, 'ERROR', 'api-gateway', 'POST /checkout 500 INTERNAL SERVER ERROR — 78ms [NullPointerException]') },
+          ];
+        }
 
         if (isErr) {
           const evts = [
@@ -857,9 +881,9 @@
       }
 
       /* ── simulation runner ── */
-      function runSim(isErr) {
+      function runSim(isErr, isBadCode) {
         running = true;
-        liveSpans = {}; spanOrder = []; traceScale = isErr ? 112 : 342;
+        liveSpans = {}; spanOrder = []; traceScale = isBadCode ? 78 : (isErr ? 112 : 342);
         timers.forEach(clearTimeout); timers = [];
 
         const btn = document.getElementById('cs-checkout-btn');
@@ -873,7 +897,7 @@
         document.getElementById('cs-trace-area').innerHTML =
           '<div class="cs-idle-msg">Initializing trace&hellip;</div>';
 
-        const events = buildEvents(cart, isErr);
+        const events = buildEvents(cart, isErr, isBadCode);
 
         events.forEach(evt => {
           const t = setTimeout(() => {
@@ -897,7 +921,7 @@
                   totalReq++;
                   if (liveSpans[evt.id].err) totalErr++;
                   updateMetrics();
-                  finishSim(liveSpans[evt.id].err);
+                  finishSim(liveSpans[evt.id].err, isBadCode);
                 }
               }
               renderTraceArea();
@@ -907,12 +931,16 @@
         });
       }
 
-      function finishSim(isErr) {
+      function finishSim(isErr, isBadCode) {
         running = false;
         const btn = document.getElementById('cs-checkout-btn');
         const statusEl = document.getElementById('cs-trace-status');
 
-        if (isErr) {
+        if (isBadCode) {
+          btn.innerHTML = '<i class="fa-solid fa-bug"></i> App Error — Try Again';
+          btn.style.color = '#e74c3c'; btn.style.borderColor = '#e74c3c';
+          statusEl.textContent = '✕ exception'; statusEl.className = 'cs-status-error';
+        } else if (isErr) {
           btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Failed — Try Again';
           btn.style.color = '#e74c3c'; btn.style.borderColor = '#e74c3c';
           statusEl.textContent = '✕ error'; statusEl.className = 'cs-status-error';
@@ -938,7 +966,9 @@
 
       document.getElementById('cs-checkout-btn').addEventListener('click', () => {
         if (running || !cart.length) return;
-        runSim(document.getElementById('cs-error-mode').checked);
+        const isBadCode = document.getElementById('cs-badcode-mode').checked;
+        const isErr     = !isBadCode && document.getElementById('cs-error-mode').checked;
+        runSim(isErr, isBadCode);
       });
       document.getElementById('cs-clear-logs').addEventListener('click', () => {
         document.getElementById('cs-log-area').innerHTML =
