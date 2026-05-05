@@ -1199,35 +1199,33 @@ a.hex {
 /* ===== NAV TRY ME LABELS ===== */
 
 .nav-try-me {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.75rem;
+  display: inline-block;
+  font-size: 0.7rem;
   font-weight: bold;
   white-space: nowrap;
-  color: var(--bg-base);
-  background: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--border-radius-pill);
-  padding: 6px 14px;
-  opacity: 0;
+  margin-left: 6px;
   pointer-events: none;
+  opacity: 0;
 }
 
-.nav-try-me-spider { left:  calc(100% + 8px); }
-.nav-try-me-theme  { right: calc(100% + 8px); }
-
-.nav-try-me-spider,
+.nav-try-me-spider {
+  animation: navTryMeFlash 8s ease-in-out infinite;
+}
 .nav-try-me-theme {
-  animation: navTryMeFlash 3s ease-in-out infinite;
+  animation: navTryMeFlash 8s ease-in-out infinite;
+  animation-delay: 4s;
 }
 
 @keyframes navTryMeFlash {
   0%   { opacity: 0; }
-  8%   { opacity: 1; }
+  10%  { opacity: 1; }
   40%  { opacity: 1; }
   50%  { opacity: 0; }
   100% { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .nav-try-me { display: none; }
 }
 
 /* Demo Layout */

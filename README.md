@@ -18,7 +18,7 @@ A personal portfolio website hosted on GitHub Pages at [aracnacon.github.io](htt
 
 - **Animated Splash Screen** - Full-screen SVG spider logo with independently pivoting arms/tools; electric circuit animation races around the inner body and powers up the outer body like a light bulb. Auto-dismisses after 3 seconds (or click to dismiss early). Shows only on first visit or after 2 minutes of inactivity.
 - **Video Backgrounds** - Each theme plays a matching looping video background (desert, forest, arctic mountains, Miami nightlife, midnight circuit board). Arctic theme adds a progressive frost-overlay canvas effect that builds up over the video duration.
-- **Nav "Try Me!" Prompts** - Animated pill-shaped labels flash beside the theme toggle and spider game nav icons to draw attention to them.
+- **Nav "Try Me!" Prompts** - "Try Me!" text alternates fading in on the theme toggle and spider game nav buttons, drawing attention to them. Hidden on mobile.
 - **Crawling Spider Background** - A miniature version of the SVG spider crawls around every page with a walk-cycle animation and electric body effect.
 - **Spider Fire Fighter Game** (`spider-demo.html`) - Canvas-based mini-game: mouse-guided spider shoots laser bolts to extinguish spreading fires while dodging falling Matrix code rain. Features a how-to-play start screen, back-to-home link, Web Audio API sound effects (auto-silenced after 7s on game over), 3 lives, score tracking, and particle explosions.
 - **Theme Switcher** - 5 visual themes (Midnight, Ember, Forest, Arctic, Miami) each with unique video background, fonts, colors, and component styling.
