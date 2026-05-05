@@ -847,7 +847,7 @@
       const PRODUCTS = [
         { id:'p1', sku:'SKU-8801', name:'8-Leg Running Shoes', price:79.99,  icon:'fa-shoe-prints' },
         { id:'p2', sku:'SKU-8802', name:'Silk-Grip Dress Shoes', price:49.99,  icon:'fa-socks'  },
-        { id:'p3', sku:'SKU-8803', name:'8-Leg Rain Boots', price:129.99, icon:'fa-boot' },
+        { id:'p3', sku:'SKU-8803', name:'8-Leg Rain Boots', price:129.99, icon:'fa-boot', rainSvg:`<svg viewBox="0 0 16 20" width="11" height="14" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="0" width="5" height="11" rx="2.5"/><path d="M2 10 Q2 13 0 14 L0 17 Q0 18 1 18 L13 18 Q14 18 14 17 L14 15 Q14 14 13 14 L9 14 L9 10 Z"/><rect x="0" y="18" width="14" height="2" rx="1"/></svg>` },
       ];
 
       let cart = [], running = false, timers = [];
@@ -1186,7 +1186,7 @@
         el.innerHTML = PRODUCTS.map(p => `
           <div class="cs-product">
             ${['p1','p2','p3'].includes(p.id)
-              ? `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:22px;gap:1px;color:var(--color-primary);font-size:0.55em">${Array(4).fill(`<i class="fa-solid ${p.icon}"></i>`).join('')}</span>`
+              ? `<span class="cs-prod-icon" style="display:inline-flex;flex-wrap:wrap;width:22px;gap:1px;color:var(--color-primary);font-size:0.55em">${Array(4).fill(p.rainSvg || `<i class="fa-solid ${p.icon}"></i>`).join('')}</span>`
               : p.svg
               ? `<span class="cs-prod-icon" style="display:inline-flex;align-items:center;color:var(--color-primary)">${p.svg}</span>`
               : `<i class="fa-solid ${p.icon} cs-prod-icon"></i>`}
