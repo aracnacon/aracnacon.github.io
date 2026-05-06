@@ -1,10 +1,10 @@
 (function () {
   const THEME_VIDEOS = {
-    'default':      'videos/theme-midnight.mp4',
-    'theme-ember':  'videos/theme-ember.mp4',
-    'theme-forest': 'videos/theme-forest.mp4',
-    'theme-arctic': 'videos/theme-arctic.mp4',
-    'theme-miami':  'videos/theme-miami.mp4',
+    'default':      'https://aracnacon.github.io/videos/theme-midnight.mp4',
+    'theme-ember':  'https://aracnacon.github.io/videos/theme-ember.mp4',
+    'theme-forest': 'https://aracnacon.github.io/videos/theme-forest.mp4',
+    'theme-arctic': 'https://aracnacon.github.io/videos/theme-arctic.mp4',
+    'theme-miami':  'https://aracnacon.github.io/videos/theme-miami.mp4',
   };
 
   // ── Video element ───────────────────────────────────────────────
